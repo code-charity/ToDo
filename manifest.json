@@ -1,0 +1,25 @@
+{
+    "browser_action": {
+        "default_popup": "index.html"
+    },
+    "default_locale": "en",
+    "icons": {
+        "16": "icons/16.png",
+        "32": "icons/32.png",
+        "48": "icons/48.png",
+        "128": "icons/128.png"
+    },
+    "manifest_version": 2,
+    "minimum_chrome_version": "49.0",
+    "name": "To-Do",
+    "offline_enabled": true,
+    "optional_permissions": [
+        "downloads"
+    ],
+    "permissions": [
+        "storage"
+    ],
+    "update_url": "https://clients2.google.com/service/update2/crx",
+    "version": "1.0",
+    "version_name": "1.0 beta"
+}
