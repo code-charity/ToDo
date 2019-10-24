@@ -1,0 +1,66 @@
+.satus-checkbox
+{
+    position: relative;
+
+    display: flex;
+
+    box-sizing: border-box;
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+
+    cursor: pointer;
+    transition: background-color 15ms linear;
+
+    outline: none;
+    background-color: transparent;
+
+    align-items: center;
+    justify-content: space-between;
+}
+
+.satus-checkbox:hover
+{
+    background: rgba(0,0,0,.05);
+}
+
+.satus-checkbox .label
+{
+    padding: 0 16px 0 0;
+}
+
+.satus-checkbox__checkmark
+{
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+
+    transition: 200ms;
+
+    border: 2px solid var(--text-1, #727272);
+    border-radius: 4px;
+    background: transparent;
+}
+
+.satus-checkbox[data-value='true'] .satus-checkbox__checkmark
+{
+    border-color: var(--primary-color, #ee6002);
+    background: var(--primary-color, #ee6002);
+}
+
+.satus-checkbox__checkmark svg
+{
+    display: block;
+
+    transition: 200ms;
+
+    opacity: 0;
+
+    stroke: #fff;
+    stroke-width: 4px;
+}
+
+.satus-checkbox[data-value='true'] .satus-checkbox__checkmark svg
+{
+    opacity: 1;
+}
