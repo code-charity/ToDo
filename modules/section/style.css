@@ -1,0 +1,18 @@
+.satus-section
+{
+    display: flex;
+
+    flex: 1;
+    align-items: center;
+}
+
+.satus-section--align-start
+{
+    justify-content: flex-start;
+}
+
+
+.satus-section--align-end
+{
+    justify-content: flex-end;
+}

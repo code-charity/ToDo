@@ -1,0 +1,29 @@
+.satus-button
+{
+    display: flex;
+
+    width: 48px;
+    height: 48px;
+
+    cursor: pointer;
+
+    border: none;
+    outline: none;
+    background: none;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.satus-button > svg
+{
+    display: block;
+
+    width: 24px;
+    height: 24px;
+}
+
+.satus-header .satus-button > svg
+{
+    fill: var(--text-2, #727272);
+}

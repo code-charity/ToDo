@@ -1,0 +1,16 @@
+.satus-header
+{
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 56px;
+    padding: 0 8px;
+
+    color: var(--text-2, #727272);
+    background: var(--background-2, #f2f2f2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+}
