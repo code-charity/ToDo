@@ -27,7 +27,7 @@
     width: 100%;
     height: 100%;
 
-    transition: 350ms;
+    transition: 250ms;
 
     background: var(--background-1, #fefefe);
 
@@ -55,7 +55,7 @@
     height: 100%;
 
     content: '';
-    transition: 350ms;
+    transition: 250ms;
 
     opacity: 0;
     background: #000;
@@ -72,9 +72,9 @@
     height: 100%;
 
     content: '';
-    transition: 350ms;
+    transition: 250ms;
 
-    opacity: .5;
+    opacity: .2;
     background: #000;
 }
 
@@ -115,9 +115,9 @@
     height: 100%;
 
     content: '';
-    transition: 350ms;
+    transition: 250ms;
 
-    opacity: .5;
+    opacity: .2;
     background: #000;
 }
 
@@ -132,7 +132,7 @@
     height: 100%;
 
     content: '';
-    transition: 350ms;
+    transition: 250ms;
 
     opacity: 0;
     background: #000;
