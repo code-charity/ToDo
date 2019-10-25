@@ -8,21 +8,55 @@ Menu.main = {
                 object = Menu.main;
 
             for (let i = 0, l = lists.length; i < l; i++) {
-                object[lists[i].id] = {
-                    type: 'folder',
-                    innerText: lists[i].name
-                };
+                if (lists[i]) {
+                    object[lists[i].id] = {
+                        type: 'folder',
+                        innerText: lists[i].name,
+                        contextmenu: {
+                            remove: {
+                                type: 'button',
+                                innerText: 'Remove',
+                                on: {
+                                    click: function() {
+                                        delete Menu.main[lists[i].id];
+                                        Satus.remove('lists/' + i);
+                                        document.querySelector('.satus-contextmenu').remove();
+                                        document.querySelector('.satus').innerHTML = '';
+                                        Satus.render(document.querySelector('.satus'), Menu);
+                                    }
+                                }
+                            }
+                        }
+                    };
 
-                if (lists[i].items.length > 0)
-                    for (let j = 0, k = lists[i].items.length; j < k; j++)
-                        object[lists[i].id][lists[i].items[j].id] = {
-                            type: 'switch',
-                            label: lists[i].items[j].name
-                        };
+                    if (lists[i].items.length > 0)
+                        for (let j = 0, k = lists[i].items.length; j < k; j++)
+                            if (lists[i].items[j])
+                                object[lists[i].id][lists[i].items[j].id] = {
+                                    type: 'checkbox',
+                                    storage: 'lists/' + i + '/items/' + j + '/value',
+                                    label: lists[i].items[j].name,
+                                    contextmenu: {
+                                        remove: {
+                                            type: 'button',
+                                            innerText: 'Remove',
+                                            on: {
+                                                click: function() {
+                                                    delete Menu.main[lists[i].id][lists[i].items[j].id];
+                                                    Satus.remove('lists/' + i + '/items/' + j);
+                                                    document.querySelector('.satus-contextmenu').remove();
+                                                    document.querySelector('.satus-main__container').innerHTML = '';
+                                                    Satus.render(document.querySelector('.satus-main__container'), Menu.main[lists[i].id]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                };
 
-                object[lists[i].id];
-                
-                addTaskButton(object[lists[i].id], lists[i].id);
+                    object[lists[i].id];
+
+                    addTaskButton(object[lists[i].id], lists[i].id);
+                }
             }
 
             object.add_list = {
@@ -74,4 +108,6 @@ Menu.main = {
     }
 };
 
-Satus.render(document.querySelector('.satus'), Menu);
+Satus.storage.sync(function() {
+    Satus.render(document.querySelector('.satus'), Menu);
+});

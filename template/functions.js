@@ -60,7 +60,22 @@ const Lists = {
             lists.push({
                 id: uuidv4(),
                 name: 'Tasks',
-                items: []
+                items: [],
+                contextmenu: {
+                    remove: {
+                        type: 'button',
+                        innerText: 'Remove',
+                        on: {
+                            click: function() {
+                                delete Menu.main[lists[i].id];
+                                Satus.remove('lists/' + i);
+                                document.querySelector('.satus-contextmenu').remove();
+                                document.querySelector('.satus').innerHTML = '';
+                                Satus.render(document.querySelector('.satus'), Menu);
+                            }
+                        }
+                    }
+                }
             });
 
         Satus.set('lists', lists);
@@ -79,7 +94,22 @@ const Lists = {
 
         Menu.main[id] = {
             type: 'folder',
-            innerText: name
+            innerText: name,
+            contextmenu: {
+                remove: {
+                    type: 'button',
+                    innerText: 'Remove',
+                    on: {
+                        click: function() {
+                            delete Menu.main[lists[i].id];
+                            Satus.remove('lists/' + i);
+                            document.querySelector('.satus-contextmenu').remove();
+                            document.querySelector('.satus').innerHTML = '';
+                            Satus.render(document.querySelector('.satus'), Menu);
+                        }
+                    }
+                }
+            }
         };
 
         addTaskButton(Menu.main[id], id);
@@ -94,15 +124,31 @@ const Tasks = {
             item_id = uuidv4();
 
         for (let i = 0, l = lists.length; i < l; i++) {
-            if (lists[i].id === id) {
+            if (lists[i] && lists[i].id === id) {
                 lists[i].items.push({
                     id: item_id,
                     name: name
                 });
 
                 Menu.main[id][item_id] = {
-                    type: 'switch',
-                    label: name
+                    type: 'checkbox',
+                    storage: 'lists/' + i + '/items/' + (lists[i].items.length - 1) + '/value',
+                    label: name,
+                    contextmenu: {
+                        remove: {
+                            type: 'button',
+                            innerText: 'Remove',
+                            on: {
+                                click: function() {
+                                    delete Menu.main[lists[i].id][lists[i].items[j].id];
+                                    Satus.remove('lists/' + i + '/items/' + j);
+                                    document.querySelector('.satus-contextmenu').remove();
+                                    document.querySelector('.satus-main__container').innerHTML = '';
+                                    Satus.render(document.querySelector('.satus-main__container'), Menu.main[lists[i].id]);
+                                }
+                            }
+                        }
+                    }
                 };
             }
         }
