@@ -15,7 +15,9 @@
 
 html,
 body,
-.satus
+.satus,
+.satus input,
+.satus button
 {
     font-family: 'Open Sans', sans-serif;
 }
@@ -25,13 +27,14 @@ body,
     position: absolute;
     left: 62px;
 
-    transition: 300ms;
+    transition: 200ms;
 }
 
 .satus:not([data-path]) .satus-header__title,
 .satus[data-path='main'] .satus-header__title
 {
     left: 8px;
+    transition-delay: 100ms;
 }
 
 .satus-button--back
@@ -40,7 +43,7 @@ body,
 
     visibility: visible;
 
-    transition: 250ms;
+    transition: 150ms;
 
     opacity: 1;
 }
