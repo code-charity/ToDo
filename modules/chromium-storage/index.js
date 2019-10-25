@@ -1,31 +1,43 @@
 /*-----------------------------------------------------------------------------
 >>> MODULE: CHROMIUM STORAGE
--------------------------------------------------------------------------------
-1.0 Set
-2.0 Sync
 -----------------------------------------------------------------------------*/
 
-Satus.chromium_storage = function() {
-    /*-------------------------------------------------------------------------
-    1.0 Get
-    -------------------------------------------------------------------------*/
-    this.on('set', function(name, value) {
-        let object = {};
+Satus.storage = (function() {
+    Satus.on('set', function(name, value) {
+        let path = name.split('/').filter(function(value) {
+                return value != '';
+            }),
+            object = {};
 
-        object[name] = value;
+        object[path[0]] = Satus.data[path[0]];
 
         chrome.storage.local.set(object);
     });
 
+    Satus.on('remove', function(name) {
+        let path = name.split('/').filter(function(value) {
+                return value != '';
+            }),
+            object = Satus.data;
 
-    /*-------------------------------------------------------------------------
-	2.0 Sync
-	-------------------------------------------------------------------------*/
+        for (let i = 0, l = path.length; i < l; i++)
+            if (i === l - 1)
+                object[path[i]] = null;
+            else
+                object = object[path[i]];
 
-    chrome.storage.local.get(function(object) {
-        for (let key in object)
-            Satus.set(key, object[key], false);
+
+        chrome.storage.local.set(Satus.data);
     });
-};
 
-Satus.chromium_storage();
+    return {
+        sync: function(callback) {
+            chrome.storage.local.get(function(object) {
+                for (let key in object)
+                    Satus.set(key, object[key], false);
+
+                callback();
+            });
+        }
+    };
+})();
