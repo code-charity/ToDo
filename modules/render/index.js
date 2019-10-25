@@ -51,11 +51,14 @@ Satus.render = function(container, object) {
                         if (property !== 'render')
                             element.addEventListener(property, item.on[property]);
                         else
-                            item.on['render'](element);
+                            item.on['render'](element, item);
 
                 element.satusItem = item;
 
                 container.appendChild(element);
+
+                for (let i = 0, l = this.events.renderer.length; i < l; i++)
+                    this.events.renderer[i](element, item);
             }
         }
     }
