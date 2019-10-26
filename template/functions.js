@@ -62,9 +62,43 @@ const Lists = {
                 name: 'Tasks',
                 items: [],
                 contextmenu: {
-                    remove: {
+                    rename: {
                         type: 'button',
-                        innerText: 'Remove',
+                        innerText: 'Rename',
+                        data: lists[lists.length],
+                        data_id: lists.length,
+                        on: {
+                            click: function() {
+                                document.querySelector('.satus-contextmenu').remove();
+
+                                Satus.dialog({
+                                    input: {
+                                        type: 'input',
+                                        data: this.data,
+                                        data_id: this.data_id,
+                                        value: this.data.name,
+                                        on: {
+                                            keydown: function(event) {
+                                                let self = this;
+
+                                                if (event.keyCode === 13) {
+                                                    this.data.name = this.value;
+                                                    Menu.main[this.data.id].label = this.value;
+                                                    Satus.set('lists/' + this.data_id, this.data);
+                                                    document.querySelector('.satus-dialog').remove();
+                                                    document.querySelector('.satus').innerHTML = '';
+                                                    Satus.render(document.querySelector('.satus'), Menu);
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    delete: {
+                        type: 'button',
+                        innerText: 'Delete',
                         on: {
                             click: function() {
                                 delete Menu.main[lists[i].id];
@@ -92,27 +126,15 @@ const Lists = {
             items: []
         });
 
-        Menu.main[id] = {
-            type: 'folder',
-            innerText: name,
-            contextmenu: {
-                remove: {
-                    type: 'button',
-                    innerText: 'Remove',
-                    on: {
-                        click: function() {
-                            delete Menu.main[lists[i].id];
-                            Satus.remove('lists/' + i);
-                            document.querySelector('.satus-contextmenu').remove();
-                            document.querySelector('.satus').innerHTML = '';
-                            Satus.render(document.querySelector('.satus'), Menu);
-                        }
-                    }
-                }
-            }
-        };
+        document.querySelector('.satus').innerHTML = '';
 
-        addTaskButton(Menu.main[id], id);
+        for (let i in Menu.main) {
+            if (i !== 'type' && i !== 'on') {
+                delete Menu.main[i];
+            }
+        }
+
+        Satus.render(document.querySelector('.satus'), Menu);
 
         Satus.set('lists', lists);
     }
@@ -135,9 +157,47 @@ const Tasks = {
                     storage: 'lists/' + i + '/items/' + (lists[i].items.length - 1) + '/value',
                     label: name,
                     contextmenu: {
-                        remove: {
+                        rename: {
                             type: 'button',
-                            innerText: 'Remove',
+                            innerText: 'Rename',
+                            data: lists[i],
+                            data_j: lists[i].items[lists[i].items.length - 1],
+                            data_id: i,
+                            data_id_j: lists[i].items.length,
+                            on: {
+                                click: function() {
+                                    document.querySelector('.satus-contextmenu').remove();
+
+                                    Satus.dialog({
+                                        input: {
+                                            type: 'input',
+                                            data: this.data,
+                                            data_j: this.data_j,
+                                            data_id: this.data_id,
+                                            data_id_j: this.data_id_j,
+                                            value: this.data_j.name,
+                                            on: {
+                                                keydown: function(event) {
+                                                    let self = this;
+
+                                                    if (event.keyCode === 13) {
+                                                        this.data_j.name = this.value;
+                                                        Menu.main[this.data.id][this.data_j.id].label = this.value;
+                                                        Satus.set('lists/' + this.data_id + '/items/' + this.data_id_j, this.data_j);
+                                                        document.querySelector('.satus-dialog').remove();
+                                                        document.querySelector('.satus-main__container').innerHTML = '';
+                                                        Satus.render(document.querySelector('.satus-main__container'), Menu.main[this.data.id]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        },
+                        delete: {
+                            type: 'button',
+                            innerText: 'Delete',
                             on: {
                                 click: function() {
                                     delete Menu.main[lists[i].id][lists[i].items[j].id];
