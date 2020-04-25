@@ -17,6 +17,13 @@ Menu.create = {
                 if (event.keyCode === 13) {
                     create();
                 }
+            },
+            onrender: function() {
+                var self = this;
+
+                setTimeout(function() {
+                    self.focus();
+                });
             }
         },
         section: {

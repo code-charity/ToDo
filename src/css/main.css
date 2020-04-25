@@ -5,6 +5,7 @@
 2.0 Section
 3.0 Folder
 4.0 Button
+5.0 Switch
 --------------------------------------------------------------*/
 
 /*--------------------------------------------------------------
@@ -80,4 +81,81 @@
     width: 100%;
     height: 48px;
     padding: 0 16px;
+}
+
+
+/*--------------------------------------------------------------
+5.0 SWITCH
+--------------------------------------------------------------*/
+
+.satus-switch--checkbox
+{
+    flex-direction: row-reverse;
+}
+
+.satus-switch--checkbox .satus-switch__label
+{
+    margin: 0 0 0 16px;
+
+    flex: 1;
+}
+
+.satus-switch--checkbox .satus-switch__track
+{
+    width: 22px;
+    min-width: 22px;
+    max-width: 22px;
+    height: 22px;
+    min-height: 22px;
+    max-height: 22px;
+
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: inset 0 0 0 1px #bdbdbd;
+}
+
+.satus-switch--checkbox .satus-switch__track::before
+{
+    position: absolute;
+    top: 7px;
+    left: 5px;
+
+    visibility: hidden;
+
+    width: 10px;
+    height: 5px;
+
+    transition: unset;
+    transform: rotate(-45deg);
+
+    opacity: 0;
+    border: 2px solid #fff;
+    border-top: none;
+    border-right: none;
+    border-radius: unset;
+    background-color: transparent;
+}
+
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track::before
+{
+    top: 7px;
+    left: 5px;
+
+    visibility: visible;
+
+    transform: rotate(-45deg);
+
+    opacity: 1;
+    background-color: transparent;
+}
+
+.satus-switch--checkbox .satus-switch__track::after
+{
+    content: none;
+}
+
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track
+{
+    background: linear-gradient(135deg, #f8d266, #f17953);
+    box-shadow: 0 1px 2px rgba(0,0,0,.35);
 }

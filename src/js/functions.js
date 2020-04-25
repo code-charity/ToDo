@@ -23,6 +23,7 @@ function update(container) {
                 0: {
                     type: 'folder',
                     label: 'My Tasks',
+                    before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
                     appearanceKey: 'list',
                     storage_key: 0
                 }
@@ -39,10 +40,11 @@ function update(container) {
                 list.section[key] = data[key];
                 list.section[key].appearanceKey = 'list';
                 list.section[key].storage_key = key;
+                list.section[key].before = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
             }
         }
     } else if (item.appearanceKey === 'list') {
-        if (Object.keys(item).length === 4) {
+        if (Object.keys(item).length === 5) {
             list.section.class = 'satus-section--message';
 
             list.section.message = {
@@ -53,6 +55,7 @@ function update(container) {
             for (var key in data[item.storage_key]) {
                 if (typeof data[item.storage_key][key] === 'object') {
                     list.section[key] = data[item.storage_key][key];
+                    list.section[key].class = 'satus-switch--checkbox';
                     list.section[key].dataset = {
                         key: key
                     };
@@ -62,7 +65,6 @@ function update(container) {
                             data = JSON.parse(Satus.storage.get('data') || '{}');
 
                         data[history_item.storage_key][this.dataset.key].value = this.querySelector('input').checked;
-
                         Satus.storage.set('data', JSON.stringify(data));
                     };
                 }
@@ -91,6 +93,7 @@ function create() {
 
         data[key].appearanceKey = 'list';
         data[key].storage_key = key;
+        data[key].before = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
 
         Satus.render(data[key], document.querySelector('.satus-main .satus-section'));
     } else {
@@ -99,6 +102,7 @@ function create() {
 
         data[folder_key][task_key] = {
             type: 'switch',
+            class: 'satus-switch--checkbox',
             label: value
         };
 
@@ -112,4 +116,6 @@ function create() {
 
         Satus.render(data[folder_key][task_key], document.querySelector('.satus-main .satus-section'));
     }
+
+    document.querySelector('.satus-dialog__scrim').click();
 }

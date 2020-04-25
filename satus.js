@@ -2,8 +2,7 @@
 /*--------------------------------------------------------------
 >>> TABLE OF CONTENTS:
 ----------------------------------------------------------------
-# Storage
-# Components
+# Events
 # Render
 # Camelize
 # Animation duration
@@ -13,57 +12,17 @@ var Satus = {};
 
 
 /*--------------------------------------------------------------
-# STORAGE
+# EVENTS
 --------------------------------------------------------------*/
 
-Satus.storage = {};
+Satus.events = {};
 
+Satus.on = function(event, handler) {
+    if (!this.isset(this.events[event])) {
+        this.events[event] = [];
+    }
 
-/*--------------------------------------------------------------
-# STORAGE [GET]
---------------------------------------------------------------*/
-
-Satus.storage.get = function(name) {
-    return Satus.storage[name];
-};
-
-
-/*--------------------------------------------------------------
-# STORAGE [SET]
---------------------------------------------------------------*/
-
-Satus.storage.set = function(name, value) {};
-
-
-/*--------------------------------------------------------------
-# STORAGE [IMPORT]
---------------------------------------------------------------*/
-
-Satus.storage.import = function(callback) {};
-
-
-/*--------------------------------------------------------------
-# STORAGE [CLEAR]
---------------------------------------------------------------*/
-
-Satus.storage.clear = function(callback) {};
-
-
-/*--------------------------------------------------------------
-# LOCALE
---------------------------------------------------------------*/
-
-Satus.locale = {
-    messages: {}
-};
-
-
-/*--------------------------------------------------------------
-# GET MESSAGE
---------------------------------------------------------------*/
-
-Satus.locale.getMessage = function(string) {
-    return this.messages[string] || string;
+    this.events[event].push(handler);
 };
 
 
@@ -133,6 +92,12 @@ Satus.render = function(element, container, callback) {
                 });
             }
 
+            if (Satus.isset(Satus.events.render)) {
+                for (var i = 0, l = Satus.events.render.length; i < l; i++) {
+                    Satus.events.render[i](component, object);
+                }
+            }
+
             if (typeof component.onrender === 'function') {
                 component.onrender();
             }
@@ -193,6 +158,8 @@ Satus.getAnimationDuration = function(element) {
 4.0 Clear
 --------------------------------------------------------------*/
 
+Satus.storage = {};
+
 /*--------------------------------------------------------------
 # GET
 --------------------------------------------------------------*/
@@ -251,6 +218,23 @@ Satus.storage.clear = function() {
         }
     }
 };
+/*--------------------------------------------------------------
+# LOCALE
+--------------------------------------------------------------*/
+
+Satus.locale = {
+    messages: {}
+};
+
+
+/*--------------------------------------------------------------
+# GET MESSAGE
+--------------------------------------------------------------*/
+
+Satus.locale.getMessage = function(string) {
+    return this.messages[string] || string;
+};
+
 /*--------------------------------------------------------------
 # IMPORT LOCALE
 --------------------------------------------------------------*/
@@ -721,6 +705,25 @@ Satus.modules.user = function() {
 
     return data;
 };
+Satus.on('render', function(component, data) {
+    if (data.perspective === true) {
+        component.style.willChange = 'transform';
+        component.style.transformStyle = 'preserve-3d';
+        component.style.transition = '.4s';
+
+        component.addEventListener('mousemove', function(event) {
+            var bounding = component.getBoundingClientRect(),
+                dx = event.clientX - bounding.left - bounding.width / 2,
+                dy = event.clientY - bounding.top - bounding.height / 2;
+
+            this.style.transform = 'perspective(440px) rotateX(' + dy * -1 + 'deg) rotateY(' + dx + 'deg) translateZ(0)';
+        });
+
+        component.addEventListener('mouseout', function(event) {
+            this.style.transform = 'perspective(440px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+        });
+    }
+});
 /*--------------------------------------------------------------
 >>> BUTTON
 --------------------------------------------------------------*/
