@@ -1,10 +1,34 @@
+function change(old_index, new_index) {
+    var main = document.querySelector('.satus-main'),
+        data = JSON.parse(Satus.storage.get('data') || '{}'),
+        data2 = data,
+        clone;
+
+    if (main.history.length > 1) {
+        data = data[main.history[main.history.length - 1].storage_key];
+    }
+
+    old_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('*').dataset.key);
+    new_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('*').dataset.key);
+
+    clone = Object.assign(data[old_index2]);
+
+    data[old_index2] = data[new_index2];
+    data[new_index2] = clone;
+
+    Satus.storage.set('data', JSON.stringify(data2));
+}
+
 function update(container) {
     var item = this.history[this.history.length - 1],
         id = item.appearanceKey,
         data = JSON.parse(Satus.storage.get('data') || '{}'),
-        list = {
-            section: {
-                type: 'section'
+        ui = {
+            list: {
+                type: 'list',
+                compact: true,
+                sortable: true,
+                onchange: change
             }
         };
 
@@ -17,8 +41,11 @@ function update(container) {
 
     if (item.appearanceKey === 'home') {
         if (Object.keys(data).length === 0) {
-            list.section = {
-                type: 'section',
+            ui.list = {
+                type: 'list',
+                compact: true,
+                sortable: true,
+                onchange: change,
 
                 0: {
                     type: 'folder',
@@ -35,31 +62,36 @@ function update(container) {
             };
 
             Satus.storage.set('data', JSON.stringify(data));
+
+            data[0].storage_key = 0;
         } else {
             for (var key in data) {
-                list.section[key] = data[key];
-                list.section[key].appearanceKey = 'list';
-                list.section[key].storage_key = key;
-                list.section[key].before = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
+                ui.list[key] = data[key];
+                ui.list[key].appearanceKey = 'list';
+                ui.list[key].storage_key = key;
+                ui.list[key].dataset = {
+                    key: key
+                };
+                ui.list[key].before = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
             }
         }
     } else if (item.appearanceKey === 'list') {
         if (Object.keys(item).length === 5) {
-            list.section.class = 'satus-section--message';
+            ui.list.class = 'satus-list--message';
 
-            list.section.message = {
+            ui.list.message = {
                 type: 'text',
                 innerText: 'No tasks'
             };
         } else {
             for (var key in data[item.storage_key]) {
                 if (typeof data[item.storage_key][key] === 'object') {
-                    list.section[key] = data[item.storage_key][key];
-                    list.section[key].class = 'satus-switch--checkbox';
-                    list.section[key].dataset = {
+                    ui.list[key] = data[item.storage_key][key];
+                    ui.list[key].class = 'satus-switch--checkbox';
+                    ui.list[key].dataset = {
                         key: key
                     };
-                    list.section[key].onchange = function() {
+                    ui.list[key].onchange = function() {
                         var main = document.querySelector('.satus-main'),
                             history_item = main.history[main.history.length - 1],
                             data = JSON.parse(Satus.storage.get('data') || '{}');
@@ -72,7 +104,7 @@ function update(container) {
         }
     }
 
-    Satus.render(list, container.querySelector('.satus-scrollbar__content'));
+    Satus.render(ui, container.querySelector('.satus-scrollbar__content'));
 }
 
 function create() {
@@ -95,7 +127,7 @@ function create() {
         data[key].storage_key = key;
         data[key].before = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
 
-        Satus.render(data[key], document.querySelector('.satus-main .satus-section'));
+        Satus.render(data[key], document.querySelector('.satus-main .satus-list'));
     } else {
         var folder_key = history_item.storage_key,
             task_key = Object.keys(data[folder_key]).length;
@@ -110,11 +142,11 @@ function create() {
 
         data[folder_key][task_key].storage_key = task_key;
 
-        if (document.querySelector('.satus-main .satus-section--message .satus-text')) {
-            document.querySelector('.satus-main .satus-section--message .satus-text').remove();
+        if (document.querySelector('.satus-main .satus-list--message .satus-text')) {
+            document.querySelector('.satus-main .satus-list--message .satus-text').remove();
         }
 
-        Satus.render(data[folder_key][task_key], document.querySelector('.satus-main .satus-section'));
+        Satus.render(data[folder_key][task_key], document.querySelector('.satus-main .satus-list'));
     }
 
     document.querySelector('.satus-dialog__scrim').click();

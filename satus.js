@@ -41,84 +41,6 @@ Satus.modules = {};
 
 
 /*--------------------------------------------------------------
-# RENDER
---------------------------------------------------------------*/
-
-Satus.render = function(element, container, callback) {
-    function convert(object) {
-        if (object && object.type) {
-            var type = Satus.camelize(object.type),
-                component = Satus.components[type](object),
-                className = 'satus-' + object.type,
-                excluded_properties = ['type', 'label', 'class', 'title', 'storage'];
-
-            function applyProperties(object, target) {
-                for (var key in object) {
-                    if (Satus.isset(object[key]) && typeof object[key] === 'object' && !object[key].type) {
-                        if (typeof target[key] !== 'object') {
-                            target[key] = {};
-                        }
-
-                        applyProperties(object[key], target[key]);
-                    } else if (excluded_properties.indexOf(key) === -1) {
-                        target[key] = object[key];
-                    }
-                }
-            }
-
-            applyProperties(object, component);
-
-            if (object.class) {
-                className += ' ' + object.class;
-            }
-
-            if (object.before) {
-                var component_before = document.createElement('span');
-
-                component_before.innerHTML = object.before;
-
-                for (var i = component_before.children.length - 1; i > -1; i--) {
-                    component.insertBefore(component_before.children[i], component.firstChild);
-                }
-            }
-
-            component.className = className;
-
-            (container || document.body).appendChild(component);
-
-            if (typeof component.onClickRender === 'object') {
-                component.addEventListener('click', function() {
-                    Satus.render(component.onClickRender);
-                });
-            }
-
-            if (Satus.isset(Satus.events.render)) {
-                for (var i = 0, l = Satus.events.render.length; i < l; i++) {
-                    Satus.events.render[i](component, object);
-                }
-            }
-
-            if (typeof component.onrender === 'function') {
-                component.onrender();
-            }
-
-            if (callback) {
-                callback();
-            }
-        }
-    }
-
-    if (element.type) {
-        convert(element);
-    } else {
-        for (var key in element) {
-            convert(element[key]);
-        }
-    }
-};
-
-
-/*--------------------------------------------------------------
 # ISSET
 --------------------------------------------------------------*/
 
@@ -279,6 +201,96 @@ Satus.locale.import = function(src, callback) {
 
     xhr.open('GET', src, true);
     xhr.send();
+};
+/*--------------------------------------------------------------
+>>> RENDER
+--------------------------------------------------------------*/
+
+Satus.render = function(element, container, callback) {
+    function convert(object) {
+        if (object && object.type) {
+            var type = Satus.camelize(object.type),
+                component = Satus.components[type](object),
+                excluded_properties = ['type', 'label', 'class', 'title', 'storage'];
+
+            function applyProperties(object, target) {
+                for (var key in object) {
+                    if (Satus.isset(object[key]) && typeof object[key] === 'object' && !object[key].type) {
+                        if (typeof target[key] !== 'object') {
+                            target[key] = {};
+                        }
+
+                        applyProperties(object[key], target[key]);
+                    } else if (excluded_properties.indexOf(key) === -1) {
+                        target[key] = object[key];
+                    }
+                }
+            }
+
+            applyProperties(object, component);
+
+            component.classList.add('satus-' + object.type);
+
+            if (object.class) {
+                var class_list = object.class.split(' ');
+
+                for (var i = 0, l = class_list.length; i < l; i++) {
+                    component.classList.add(class_list[i]);
+                }
+            }
+
+            if (object.before) {
+                var component_before = document.createElement('span');
+
+                component_before.innerHTML = object.before;
+
+                for (var i = component_before.children.length - 1; i > -1; i--) {
+                    component.insertBefore(component_before.children[i], component.firstChild);
+                }
+            }
+
+            (container || document.body).appendChild(component);
+
+            if (typeof component.onClickRender === 'object') {
+                component.addEventListener('click', function() {
+                    Satus.render(component.onClickRender);
+                });
+            }
+
+            if (Satus.isset(Satus.events.render)) {
+                for (var i = 0, l = Satus.events.render.length; i < l; i++) {
+                    Satus.events.render[i](component, object);
+                }
+            }
+
+            if (typeof component.onrender === 'function') {
+                component.onrender();
+            }
+
+            if (callback) {
+                callback();
+            }
+        }
+    }
+
+    if (element.type) {
+        convert(element);
+    } else {
+        for (var key in element) {
+            convert(element[key]);
+        }
+    }
+};
+/*--------------------------------------------------------------
+# CLONE NODE STYLES
+--------------------------------------------------------------*/
+
+Satus.cloneNodeStyles = function(origin, target) {
+    target.style.cssText = window.getComputedStyle(origin, '').cssText;
+
+    for (var i = 0, l = origin.children.length; i < l; i++) {
+        Satus.cloneNodeStyles(origin.children[i], target.children[i]);
+    }
 };
 /*-----------------------------------------------------------------------------
 >>> «SEARCH» MODULE
@@ -965,6 +977,102 @@ Satus.components.header = function(object) {
     return component;
 };
 /*--------------------------------------------------------------
+>>> LIST
+--------------------------------------------------------------*/
+
+Satus.components.list = function(object) {
+    var ul = document.createElement('ul');
+
+    if (object.compact === true) {
+        ul.classList.add('satus-list');
+        ul.classList.add('satus-list--compact');
+    }
+
+    for (var key in object) {
+        if (Satus.isset(object[key].type)) {
+            var li = document.createElement('li');
+
+            if (object.sortable === true) {
+                function mousedown(event) {
+                    var self = this,
+                        dragging = false,
+                        clone = false,
+                        current_index = Array.from(self.parentNode.children).indexOf(self),
+                        bounding = this.getBoundingClientRect(),
+                        offset_x = event.clientX - bounding.left,
+                        offset_y = event.clientY - bounding.top;
+
+                    function mousemove(event) {
+                        if (dragging === false) {
+                            clone = self.cloneNode(true);
+
+                            Satus.cloneNodeStyles(self, clone);
+                            clone.style.position = 'fixed';
+                            clone.style.pointerEvents = 'none';
+                            clone.style.backgroundColor = '#fff';
+                            self.style.visibility = 'hidden';
+
+                            document.body.appendChild(clone);
+
+                            dragging = true;
+                        }
+
+                        var x = bounding.left, //event.clientX - offset_x
+                            y = event.clientY - offset_y,
+                            index = Math.floor(y / self.offsetHeight) - 1;
+
+                        clone.style.left = x + 'px';
+                        clone.style.top = y + 'px';
+
+                        if (index !== current_index && self.parentNode.children[index]) {
+                            var new_clone = self.cloneNode(true);
+
+                            if (index > 0) {
+                                self.parentNode.insertBefore(new_clone, self.parentNode.children[index].nextSibling);
+                            } else {
+                                self.parentNode.insertBefore(new_clone, self.parentNode.children[index]);
+                            }
+
+                            self.remove();
+
+                            self = new_clone;
+
+                            self.addEventListener('mousedown', mousedown);
+
+                            if (typeof object.onchange === 'function') {
+                                object.onchange(current_index, index);
+                            }
+
+                            current_index = index;
+                        }
+                    }
+
+                    function mouseup(event) {
+                        if (clone) {
+                            clone.remove();
+                            self.style.visibility = '';
+                        }
+
+                        window.removeEventListener('mousemove', mousemove);
+                        window.removeEventListener('mouseup', mouseup);
+                    }
+
+                    window.addEventListener('mousemove', mousemove);
+                    window.addEventListener('mouseup', mouseup);
+                }
+
+                li.addEventListener('mousedown', mousedown);
+            }
+
+            Satus.render(object[key], li);
+
+            ul.appendChild(li);
+        }
+    }
+
+    return ul;
+};
+/*--------------------------------------------------------------
 >>> MAIN
 --------------------------------------------------------------*/
 
@@ -1623,7 +1731,7 @@ Satus.components.switch = function(element) {
 
 
     // MOUSE MOVE
-    component.addEventListener('mousedown', function(event) {
+    component_track.addEventListener('mousedown', function(event) {
         var prevent = false,
             difference = 0;
 
@@ -1669,7 +1777,7 @@ Satus.components.switch = function(element) {
 
 
     // TOUCH MOVE
-    component.addEventListener('touchstart', function(event) {
+    component_track.addEventListener('touchstart', function(event) {
         var previous_x = 0,
             difference = 0;
 
