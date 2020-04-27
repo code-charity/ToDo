@@ -76,7 +76,15 @@ function update(container) {
             }
         }
     } else if (item.appearanceKey === 'list') {
-        if (Object.keys(item).length === 5) {
+        var has_tasks = false;
+
+        for (var key in item) {
+            if (item[key].type === 'switch') {
+                has_tasks = true;
+            }
+        }
+
+        if (has_tasks === false) {
             ui.list.class = 'satus-list--message';
 
             ui.list.message = {
