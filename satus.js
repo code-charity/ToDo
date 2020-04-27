@@ -994,71 +994,73 @@ Satus.components.list = function(object) {
 
             if (object.sortable === true) {
                 function mousedown(event) {
-                    var self = this,
-                        dragging = false,
-                        clone = false,
-                        current_index = Array.from(self.parentNode.children).indexOf(self),
-                        bounding = this.getBoundingClientRect(),
-                        offset_x = event.clientX - bounding.left,
-                        offset_y = event.clientY - bounding.top;
+                    if (event.button === 0) {
+                        var self = this,
+                            dragging = false,
+                            clone = false,
+                            current_index = Array.from(self.parentNode.children).indexOf(self),
+                            bounding = this.getBoundingClientRect(),
+                            offset_x = event.clientX - bounding.left,
+                            offset_y = event.clientY - bounding.top;
 
-                    function mousemove(event) {
-                        if (dragging === false) {
-                            clone = self.cloneNode(true);
+                        function mousemove(event) {
+                            if (dragging === false) {
+                                clone = self.cloneNode(true);
 
-                            Satus.cloneNodeStyles(self, clone);
-                            clone.style.position = 'fixed';
-                            clone.style.pointerEvents = 'none';
-                            clone.style.backgroundColor = '#fff';
-                            self.style.visibility = 'hidden';
+                                Satus.cloneNodeStyles(self, clone);
+                                clone.style.position = 'fixed';
+                                clone.style.pointerEvents = 'none';
+                                clone.style.backgroundColor = '#fff';
+                                self.style.visibility = 'hidden';
 
-                            document.body.appendChild(clone);
+                                document.body.appendChild(clone);
 
-                            dragging = true;
-                        }
-
-                        var x = bounding.left, //event.clientX - offset_x
-                            y = event.clientY - offset_y,
-                            index = Math.floor(y / self.offsetHeight) - 1;
-
-                        clone.style.left = x + 'px';
-                        clone.style.top = y + 'px';
-
-                        if (index !== current_index && self.parentNode.children[index]) {
-                            var new_clone = self.cloneNode(true);
-
-                            if (index > 0) {
-                                self.parentNode.insertBefore(new_clone, self.parentNode.children[index].nextSibling);
-                            } else {
-                                self.parentNode.insertBefore(new_clone, self.parentNode.children[index]);
+                                dragging = true;
                             }
 
-                            self.remove();
+                            var x = bounding.left, //event.clientX - offset_x
+                                y = event.clientY - offset_y,
+                                index = Math.floor(y / self.offsetHeight) - 1;
 
-                            self = new_clone;
+                            clone.style.left = x + 'px';
+                            clone.style.top = y + 'px';
 
-                            self.addEventListener('mousedown', mousedown);
+                            if (index !== current_index && self.parentNode.children[index]) {
+                                var new_clone = self.cloneNode(true);
 
-                            if (typeof object.onchange === 'function') {
-                                object.onchange(current_index, index);
+                                if (index > 0) {
+                                    self.parentNode.insertBefore(new_clone, self.parentNode.children[index].nextSibling);
+                                } else {
+                                    self.parentNode.insertBefore(new_clone, self.parentNode.children[index]);
+                                }
+
+                                self.remove();
+
+                                self = new_clone;
+
+                                self.addEventListener('mousedown', mousedown);
+
+                                if (typeof object.onchange === 'function') {
+                                    object.onchange(current_index, index);
+                                }
+
+                                current_index = index;
+                            }
+                        }
+
+                        function mouseup(event) {
+                            if (clone) {
+                                clone.remove();
+                                self.style.visibility = '';
                             }
 
-                            current_index = index;
-                        }
-                    }
-
-                    function mouseup(event) {
-                        if (clone) {
-                            clone.remove();
-                            self.style.visibility = '';
+                            window.removeEventListener('mousemove', mousemove);
+                            window.removeEventListener('mouseup', mouseup);
                         }
 
-                        window.removeEventListener('mousemove', mousemove);
-                        window.removeEventListener('mouseup', mouseup);
+                        window.addEventListener('mousemove', mousemove);
+                        window.addEventListener('mouseup', mouseup);
                     }
-
-                    window.addEventListener('mousemove', mousemove);
-                    window.addEventListener('mouseup', mouseup);
                 }
 
                 li.addEventListener('mousedown', mousedown);
