@@ -138,7 +138,7 @@ function update(container) {
         var has_tasks = false;
 
         for (var key in item) {
-            if (item[key].type === 'switch') {
+            if (item[key].hasOwnProperty('type')) {
                 has_tasks = true;
             }
         }
@@ -227,24 +227,30 @@ function create() {
 
         Satus.storage.set('data', JSON.stringify(data));
 
-        data[folder_key][task_key] = {
+        history_item[task_key] = {
             type: 'section',
 
-            folder: {
-                type: 'folder',
+            switch: {
+                type: 'switch',
                 class: 'satus-switch--checkbox',
                 label: value,
-                before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
                 storage_key: task_key
+            },
+
+            button: {
+                type: 'button',
+                class: 'satus-button--remove',
+                before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+                onclick: remove
             }
         };
 
-        for (var i = document.querySelectorAll('body > *:not(script)').length - 1; i > -1; i++) {
-            document.querySelectorAll('body > *:not(script)')[i].remove();
-        }
+        document.querySelector('.satus-scrollbar__content').innerHTML = '';
 
-        //Satus.render(Menu, document.body);
+        update();
     }
+
+    document.querySelector('.satus-dialog__scrim').click();
 }
 var Menu = {
     header: {
