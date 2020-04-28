@@ -300,6 +300,37 @@ body[data-appearance='home'] .satus-text--title
     background-color: var(--satus-theme-surface, #fff);
 }
 
+.satus-main__container .satus-list li .satus-section
+{
+    position: relative;
+
+    width: 100%;
+}
+
+.satus-button--remove
+{
+    position: absolute;
+    z-index: 1;
+    top: 6px;
+    right: 8px;
+
+    visibility: hidden;
+
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+}
+
+.satus-button--remove::before
+{
+    border-radius: 50%;
+}
+
+.satus-main__container .satus-list li .satus-section:hover .satus-button--remove
+{
+    visibility: visible;
+}
+
 .satus-main__container .satus-list--message
 {
     padding-right: 8px;
@@ -328,7 +359,7 @@ body[data-appearance='home'] .satus-text--title
 4.0 BUTTON
 --------------------------------------------------------------*/
 
-.satus-main .satus-button
+.satus-main .satus-button:not(.satus-button--remove)
 {
     width: 100%;
     height: 48px;
