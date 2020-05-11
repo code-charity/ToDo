@@ -87,7 +87,21 @@ Satus.storage = {};
 --------------------------------------------------------------*/
 
 Satus.storage.get = function(name) {
-    return Satus.storage[name];
+    var target = Satus.storage;
+
+    name = name.split('/').filter(function(value) {
+        return value != '';
+    });
+
+    for (var i = 0, l = name.length; i < l; i++) {
+        if (target[name[i]]) {
+            target = target[name[i]];
+        } else {
+            return undefined;
+        }
+    }
+
+    return target;
 };
 
 
@@ -96,9 +110,29 @@ Satus.storage.get = function(name) {
 --------------------------------------------------------------*/
 
 Satus.storage.set = function(name, value) {
-    var items = {};
+    var items = {},
+        target = Satus.storage;
 
-    Satus.storage[name] = value;
+    name = name.split('/').filter(function(value) {
+        return value != '';
+    });
+
+    for (var i = 0, l = name.length; i < l; i++) {
+        var item = name[i];
+
+        if (i < l - 1) {
+
+            if (target[item]) {
+                target = target[item];
+            } else {
+                target[item] = {};
+
+                target = target[item];
+            }
+        } else {
+            target[item] = value;
+        }
+    }
 
     for (var key in Satus.storage) {
         if (typeof items[key] !== 'function') {
@@ -249,6 +283,16 @@ Satus.render = function(element, container, callback) {
                 }
             }
 
+            if (object.after) {
+                var component_after = document.createElement('span');
+
+                component_after.innerHTML = object.after;
+
+                for (var i = component_after.children.length - 1; i > -1; i--) {
+                    component.appendChild(component_after.children[i]);
+                }
+            }
+
             (container || document.body).appendChild(component);
 
             if (typeof component.onClickRender === 'object') {
@@ -264,7 +308,7 @@ Satus.render = function(element, container, callback) {
             }
 
             if (typeof component.onrender === 'function') {
-                component.onrender();
+                component.onrender(object);
             }
 
             if (callback) {
@@ -1814,6 +1858,125 @@ Satus.components.switch = function(element) {
 
     return component;
 };
+Satus.components.table = function(item) {
+    var table = document.createElement('div'),
+        table_head = document.createElement('div'),
+        table_body = document.createElement('div'),
+        table_rows = [];
+
+    table_head.className = 'satus-table__head';
+    table_body.className = 'satus-table__body';
+
+    for (var i = 0, l = item.columns.length; i < l; i++) {
+        var col = document.createElement('div');
+
+        item.columns[i][Object.keys(item.columns[i])[0]].onclick = function() {
+            var index = [Array.prototype.indexOf.call(this.parentNode.parentNode.childNodes, this.parentNode)][0],
+                table_sort = (item.columns[index][Object.keys(item.columns[index])[0]].sort || '').split('/');
+
+            if (this.parentNode.parentNode.querySelector('.sort-asc') && this !== this.parentNode.parentNode.querySelector('.sort-asc')) {
+                this.parentNode.parentNode.querySelector('.sort-asc').classList.remove('sort-asc');
+            }
+
+            if (this.parentNode.parentNode.querySelector('.sort-desc') && this !== this.parentNode.parentNode.querySelector('.sort-desc')) {
+                this.parentNode.parentNode.querySelector('.sort-desc').classList.remove('sort-desc');
+            }
+
+            if (this.classList.contains('sort-desc')) {
+                this.classList.remove('sort-desc');
+                this.classList.add('sort-asc');
+            } else if (this.classList.contains('sort-asc')) {
+                this.classList.remove('sort-asc');
+                this.classList.add('sort-desc');
+            } else {
+                this.classList.add('sort-desc');
+            }
+
+            var sorted_rows = table_rows.sort(this.classList.contains('sort-asc') ? function(a, b) {
+                var a1 = a[index],
+                    b1 = b[index];
+
+                for (var i = 0, l = table_sort.length; i < l; i++) {
+                    a1 = a1[table_sort[i]];
+                    b1 = b1[table_sort[i]];
+                }
+
+                if (typeof a1 === 'number') {
+                    return a1 - b1;
+                } else if (typeof a1 === 'string') {
+                    if (a1 < b1) {
+                        return 1;
+                    }
+                    if (a1 > b1) {
+                        return -1;
+                    }
+                } else {
+                    return 0;
+                }
+            } : function(a, b) {
+                var a1 = a[index],
+                    b1 = b[index];
+
+                for (var i = 0, l = table_sort.length; i < l; i++) {
+                    a1 = a1[table_sort[i]];
+                    b1 = b1[table_sort[i]];
+                }
+
+                if (typeof a1 === 'number') {
+                    return b1 - a1;
+                } else if (typeof a1 === 'string') {
+                    if (a1 < b1) {
+                        return -1;
+                    }
+                    if (a1 > b1) {
+                        return 1;
+                    }
+                } else {
+                    return 0;
+                }
+            });
+
+            table.update(sorted_rows);
+        };
+
+        Satus.render(col, item.columns[i]);
+
+        table_head.appendChild(col);
+    }
+
+    function update(rows) {
+        this.querySelector('.satus-table__body').innerHTML = '';
+
+        table_rows = rows;
+
+        for (var i = 0, l = rows.length; i < l; i++) {
+            var row = document.createElement('div');
+
+            for (var j = 0, k = rows[i].length; j < k; j++) {
+                var col = document.createElement('div');
+
+                if (typeof rows[i][j] === 'object') {
+                    Satus.render(rows[i][j], col);
+                }
+
+                row.appendChild(col);
+            }
+
+            this.querySelector('.satus-table__body').appendChild(row);
+        }
+    }
+
+    table.update = update;
+
+    setTimeout(function() {
+        table.update(item.rows);
+    });
+
+    table.appendChild(table_head);
+    table.appendChild(table_body);
+
+    return table;
+};
 /*--------------------------------------------------------------
 >>> TEXT
 --------------------------------------------------------------*/
@@ -1846,7 +2009,7 @@ Satus.components.text = function(element) {
 --------------------------------------------------------------*/
 
 Satus.components.textField = function(element) {
-    var component = document.createElement('input');
+    var component = element.rows > 1 ? document.createElement('textarea') : document.createElement('input');
 
     component.type = 'text';
 
