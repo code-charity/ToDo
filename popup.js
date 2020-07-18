@@ -293,6 +293,7 @@ var Menu = {
                     export: {
                         type: 'button',
                         label: 'Export',
+                        before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
                         onclick: function() {
                             chrome.runtime.sendMessage({
                                 name: 'download',
@@ -304,6 +305,7 @@ var Menu = {
                     import: {
                         type: 'button',
                         label: 'Import',
+                        before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
                         onclick: function() {
                             try {
                                 var input = document.createElement('input');
@@ -378,6 +380,7 @@ var Menu = {
         }
     }
 };
+
 Menu.main = {
     type: 'main',
     appearanceKey: 'home',
