@@ -94,7 +94,7 @@ Satus.storage.get = function(name) {
     });
 
     for (var i = 0, l = name.length; i < l; i++) {
-        if (target[name[i]]) {
+        if (Satus.isset(target[name[i]])) {
             target = target[name[i]];
         } else {
             return undefined;
@@ -984,6 +984,8 @@ Satus.components.folder = function(object) {
 
     component.object = object;
 
+    component.classList.add('satus-button');
+
     component.addEventListener('click', function() {
         var parent = document.querySelector(component.object.parent) || document.querySelector('.satus-main');
 
@@ -1044,10 +1046,16 @@ Satus.components.list = function(object) {
                             clone = false,
                             current_index = Array.from(self.parentNode.children).indexOf(self),
                             bounding = this.getBoundingClientRect(),
+                            first_x = event.clientX,
+                            first_y = event.clientY,
                             offset_x = event.clientX - bounding.left,
                             offset_y = event.clientY - bounding.top;
 
                         function mousemove(event) {
+                            if (Math.abs(first_y - event.clientY) <= 5) {
+                                return false;
+                            }
+                            
                             if (dragging === false) {
                                 clone = self.cloneNode(true);
 
@@ -1068,6 +1076,8 @@ Satus.components.list = function(object) {
 
                             clone.style.left = x + 'px';
                             clone.style.top = y + 'px';
+                            
+                            //return false;
 
                             if (index !== current_index && self.parentNode.children[index]) {
                                 var new_clone = self.cloneNode(true);
@@ -1118,6 +1128,7 @@ Satus.components.list = function(object) {
 
     return ul;
 };
+
 /*--------------------------------------------------------------
 >>> MAIN
 --------------------------------------------------------------*/
@@ -1336,6 +1347,8 @@ Satus.components.select = function(element) {
         component_label = document.createElement('span'),
         component_value = document.createElement('span'),
         label = Satus.locale.getMessage(element.label);
+
+    component.classList.add('satus-button');
 
     component_label.className = 'satus-select__label';
     component_label.innerText = label;
@@ -1773,13 +1786,7 @@ Satus.components.switch = function(element) {
     }
 
     component_input.addEventListener('change', function() {
-        //if (this.dataset.storageKey) {
         Satus.storage.set(this.dataset.storageKey, this.checked);
-        //}
-
-        if (typeof component.onchange === 'function') {
-            component.onchange();
-        }
     });
 
     component.appendChild(component_input);

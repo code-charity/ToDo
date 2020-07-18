@@ -8,8 +8,8 @@ function change(old_index, new_index) {
         data = data[main.history[main.history.length - 1].storage_key];
     }
 
-    old_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('*').dataset.key);
-    new_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('*').dataset.key);
+    old_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key);
+    new_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key);
 
     clone = Object.assign(data[old_index2]);
 
