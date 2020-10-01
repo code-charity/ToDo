@@ -1,0 +1,41 @@
+{
+    "lists": {
+        "message": "Lists"
+    },
+    "export": {
+        "message": "Export"
+    },
+    "import": {
+        "message": "Import"
+    },
+    "name": {
+        "message": "Name"
+    },
+    "create": {
+        "message": "Create"
+    },
+    "noTasks": {
+        "message": "No tasks"
+    },
+    "language": {
+        "message": "Language"
+    },
+    "dataImportedSuccessfully": {
+        "message": "Data imported successfully"
+    },
+    "dataExportedSuccessfully": {
+        "message": "Data exported successfully"
+    },
+    "selectFile": {
+        "message": "Select file"
+    },
+    "ok": {
+        "message": "OK"
+    },
+    "encryption": {
+        "message": "Encryption"
+    },
+    "myTasks": {
+        "message": "My tasks"
+    }
+}

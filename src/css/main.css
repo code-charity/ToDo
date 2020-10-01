@@ -150,6 +150,11 @@
     flex: 1;
 }
 
+.satus-switch--checkbox .satus-switch__value
+{
+    flex: unset
+}
+
 .satus-switch--checkbox .satus-switch__track
 {
     width: 22px;
@@ -186,7 +191,7 @@
     background-color: transparent;
 }
 
-.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track::before
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__value .satus-switch__track::before
 {
     top: 7px;
     left: 5px;
@@ -204,7 +209,7 @@
     content: none;
 }
 
-.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__value .satus-switch__track
 {
     background-color: #f6b465;
     box-shadow: none;

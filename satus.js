@@ -73,6 +73,58 @@ Satus.getAnimationDuration = function(element) {
     return Number(window.getComputedStyle(element).getPropertyValue('animation-duration').replace(/[^0-9.]/g, '')) * 1000;
 };
 
+/*---------------------------------------------------------------
+>>> AES-CTR
+-----------------------------------------------------------------
+1.0 Encryption
+2.0 Decryption
+---------------------------------------------------------------*/
+
+satus.aes = {};
+
+/*---------------------------------------------------------------
+1.0 ENCRYPTION
+---------------------------------------------------------------*/
+
+satus.aes.encrypt = async function(text, password) {
+    var iv = crypto.getRandomValues(new Uint8Array(12)),
+        algorithm = {
+            name: 'AES-GCM',
+            iv: iv
+        };
+    
+    return Array.from(iv).map(b => ('00' + b.toString(16)).slice(-2)).join('') + btoa(Array.from(new Uint8Array(await crypto.subtle.encrypt(
+        algorithm,
+        await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password)), algorithm, false, ['encrypt']),
+        new TextEncoder().encode(text)
+    ))).map(byte => String.fromCharCode(byte)).join(''));
+};
+
+
+/*---------------------------------------------------------------
+2.0 DECRYPTION
+---------------------------------------------------------------*/
+
+satus.aes.decrypt = async function(text, password) {
+    var iv = text.slice(0,24).match(/.{2}/g).map(byte => parseInt(byte, 16)),
+        algorithm = {
+            name: 'AES-GCM',
+            iv: new Uint8Array(iv)
+        };
+            
+    return new TextDecoder().decode(await crypto.subtle.decrypt(
+        algorithm,
+        await crypto.subtle.importKey(
+            'raw',
+            await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password)),
+            algorithm,
+            false,
+            ['decrypt']
+        ),
+        new Uint8Array(atob(text.slice(24)).match(/[\s\S]/g).map(ch => ch.charCodeAt(0)))
+    )); 
+};
+
 /*--------------------------------------------------------------
 # LOCALE
 --------------------------------------------------------------*/
@@ -540,110 +592,6 @@ satus.math.degToRad = function(degrees) {
     return degrees * (Math.PI / 180);
 };
 
-/*---------------------------------------------------------------
->>> CHROMIUM STORAGE
------------------------------------------------------------------
-1.0 Get
-2.0 Set
-3.0 Import
-4.0 Clear
----------------------------------------------------------------*/
-
-satus.storage = {
-    data: {}
-};
-
-/*---------------------------------------------------------------
-1.0 GET
----------------------------------------------------------------*/
-
-satus.storage.get = function(name) {
-    if (satus.isset(name)) {
-        var target = satus.storage.data;
-
-        name = name.split('/').filter(function(value) {
-            return value != '';
-        });
-
-        for (var i = 0, l = name.length; i < l; i++) {
-            if (Satus.isset(target[name[i]])) {
-                target = target[name[i]];
-            } else {
-                return undefined;
-            }
-        }
-
-        return target;
-    }
-};
-
-
-/*---------------------------------------------------------------
-2.0 SET
----------------------------------------------------------------*/
-
-satus.storage.set = function(name, value) {
-    var items = {},
-        target = Satus.storage.data;
-        
-    if (!satus.isset(name)) {
-        return false;
-    }
-
-    name = name.split('/').filter(function(value) {
-        return value != '';
-    });
-
-    for (var i = 0, l = name.length; i < l; i++) {
-        var item = name[i];
-
-        if (i < l - 1) {
-
-            if (target[item]) {
-                target = target[item];
-            } else {
-                target[item] = {};
-
-                target = target[item];
-            }
-        } else {
-            target[item] = value;
-        }
-    }
-
-    for (var key in satus.storage.data) {
-        items[key] = satus.storage.data[key];
-    }
-
-    chrome.storage.local.set(items);
-};
-
-
-/*---------------------------------------------------------------
-3.0 IMPORT
----------------------------------------------------------------*/
-
-satus.storage.import = function(callback) {
-    chrome.storage.local.get(function(items) {
-        satus.storage.data = items;
-
-        if (callback) {
-            callback();
-        }
-    });
-};
-
-
-/*---------------------------------------------------------------
-4.0 CLEAR
----------------------------------------------------------------*/
-
-satus.storage.clear = function() {
-    chrome.storage.local.clear();
-
-    delete satus.storage.data;
-};
-
 /*-----------------------------------------------------------------------------
 >>> «SEARCH» MODULE
 -----------------------------------------------------------------------------*/
@@ -782,6 +730,110 @@ Satus.render = function(element, container, callback) {
             convert(element[key]);
         }
     }
+};
+
+/*---------------------------------------------------------------
+>>> CHROMIUM STORAGE
+-----------------------------------------------------------------
+1.0 Get
+2.0 Set
+3.0 Import
+4.0 Clear
+---------------------------------------------------------------*/
+
+satus.storage = {
+    data: {}
+};
+
+/*---------------------------------------------------------------
+1.0 GET
+---------------------------------------------------------------*/
+
+satus.storage.get = function(name) {
+    if (satus.isset(name)) {
+        var target = satus.storage.data;
+
+        name = name.split('/').filter(function(value) {
+            return value != '';
+        });
+
+        for (var i = 0, l = name.length; i < l; i++) {
+            if (Satus.isset(target[name[i]])) {
+                target = target[name[i]];
+            } else {
+                return undefined;
+            }
+        }
+
+        return target;
+    }
+};
+
+
+/*---------------------------------------------------------------
+2.0 SET
+---------------------------------------------------------------*/
+
+satus.storage.set = function(name, value) {
+    var items = {},
+        target = Satus.storage.data;
+        
+    if (!satus.isset(name)) {
+        return false;
+    }
+
+    name = name.split('/').filter(function(value) {
+        return value != '';
+    });
+
+    for (var i = 0, l = name.length; i < l; i++) {
+        var item = name[i];
+
+        if (i < l - 1) {
+
+            if (target[item]) {
+                target = target[item];
+            } else {
+                target[item] = {};
+
+                target = target[item];
+            }
+        } else {
+            target[item] = value;
+        }
+    }
+
+    for (var key in satus.storage.data) {
+        items[key] = satus.storage.data[key];
+    }
+
+    chrome.storage.local.set(items);
+};
+
+
+/*---------------------------------------------------------------
+3.0 IMPORT
+---------------------------------------------------------------*/
+
+satus.storage.import = function(callback) {
+    chrome.storage.local.get(function(items) {
+        satus.storage.data = items;
+
+        if (callback) {
+            callback();
+        }
+    });
+};
+
+
+/*---------------------------------------------------------------
+4.0 CLEAR
+---------------------------------------------------------------*/
+
+satus.storage.clear = function() {
+    chrome.storage.local.clear();
+
+    delete satus.storage.data;
 };
 
 /*--------------------------------------------------------------
@@ -1114,6 +1166,10 @@ Satus.components.select = function(element) {
                 component_value.innerText = Satus.locale.getMessage(this.dataset.key);
 
                 Satus.storage.set(component.dataset.storageKey, this.dataset.value);
+                
+                if (typeof element.onchange === 'function') {
+                    element.onchange(this.dataset.key, this.dataset.value);
+                }
 
                 var parent = this.parentNode;
 
@@ -1133,6 +1189,7 @@ Satus.components.select = function(element) {
 
     return component;
 };
+
 /*--------------------------------------------------------------
 >>> SWITCH
 --------------------------------------------------------------*/
@@ -1180,11 +1237,14 @@ Satus.components.switch = function(element) {
 
 
     // TRACK
-    var component_track = document.createElement('div');
+    var component_value = document.createElement('div'),
+        component_track = document.createElement('div');
 
+    component_value.className = 'satus-switch__value';
     component_track.className = 'satus-switch__track';
 
-    component.appendChild(component_track);
+    component_value.appendChild(component_track);
+    component.appendChild(component_value);
 
 
     // MOUSE MOVE
@@ -1269,6 +1329,7 @@ Satus.components.switch = function(element) {
 
     return component;
 };
+
 /*--------------------------------------------------------------
 >>> TABS
 --------------------------------------------------------------*/

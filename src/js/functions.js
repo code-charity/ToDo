@@ -11,7 +11,6 @@
 /*---------------------------------------------------------------
 # CREATE
 ---------------------------------------------------------------*/
-
 function create() {
     var main = document.querySelector('.satus-main'),
         history_item = main.history[main.history.length - 1],
@@ -32,13 +31,13 @@ function create() {
             name: value,
             value: false
         });
-        
+
         index = history_item.storage_key;
     }
-    
+
     satus.storage.set('data', JSON.stringify(data));
 
-    Satus.render(render(index), container);
+    satus.render(render(index), container);
 
     document.querySelector('.satus-dialog__scrim').click();
 }
@@ -57,7 +56,7 @@ function remove() {
         var key = this.parentNode.querySelector('.satus-switch').dataset.key;
 
         data.lists[history_item.storage_key].items.splice(key, 1);
-        
+
         satus.storage.set('data', JSON.stringify(data));
 
         update();
@@ -79,36 +78,34 @@ function update(container) {
     var self = (this === window ? document.querySelector('.satus-main') : this),
         item = self.history[self.history.length - 1],
         id = item.appearanceKey,
-        data = JSON.parse(Satus.storage.get('data') || '{}'),
+        data = JSON.parse(satus.storage.get('data') || '{}'),
         index = -1;
 
-    if (!Satus.isset(container)) {
+    if (!satus.isset(container)) {
         container = document.querySelector('.satus-main__container');
     }
 
     document.body.dataset.appearance = id;
     container.dataset.appearance = id;
 
-    document.querySelector('.satus-text--title').innerText = Satus.locale.getMessage(item.label) || 'Lists';
+    document.querySelector('.satus-text--title').innerText = satus.locale.getMessage(item.label) || satus.locale.getMessage('lists');
 
     container.querySelector('.satus-scrollbar__content').innerHTML = '';
 
     if (item.appearanceKey === 'home') {
         if (Object.keys(data).length === 0) {
             satus.storage.set('data', JSON.stringify({
-                lists: [
-                    {
-                        name: 'myTasks',
-                        items: []
-                    }
-                ]
+                lists: [{
+                    name: satus.locale.getMessage('myTasks'),
+                    items: []
+                }]
             }));
         }
     } else if (item.appearanceKey === 'list') {
         index = item.storage_key;
     }
-    
-    Satus.render(render(index), container.querySelector('.satus-scrollbar__content'));
+
+    satus.render(render(index), container.querySelector('.satus-scrollbar__content'));
 }
 
 
@@ -157,7 +154,7 @@ function render(index) {
             var container = {
                 type: 'section',
                 class: 'satus-section--main',
-                
+
                 text: {
                     type: 'text',
                     class: 'satus-text--message',
@@ -175,7 +172,7 @@ function render(index) {
             for (var i = 0, l = object.items.length; i < l; i++) {
                 container[i] = {
                     type: 'section',
-                    
+
                     checkbox: {
                         type: 'switch',
                         class: 'satus-switch--checkbox',
@@ -191,7 +188,7 @@ function render(index) {
                                 data = JSON.parse(satus.storage.get('data'));
 
                             data.lists[history_item.storage_key].items[this.dataset.key].value = this.querySelector('input').checked;
-                            
+
                             satus.storage.set('data', JSON.stringify(data));
                         }
                     },
@@ -205,7 +202,7 @@ function render(index) {
             }
         }
     }
-    
+
     return container;
 }
 
@@ -216,22 +213,118 @@ function render(index) {
 
 function change(old_index, new_index) {
     var main = document.querySelector('.satus-main'),
-        data = JSON.parse(Satus.storage.get('data')),
+        data = JSON.parse(satus.storage.get('data')),
         old_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key),
         new_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key);
 
-    console.log(old_index, new_index);    
-    
     if (main.history.length > 1) {
         var index = main.history[main.history.length - 1].storage_key;
-        
+
         data.lists[index].items.splice(new_index2, 0, data.lists[index].items.splice(old_index2, 1)[0]);
     } else {
         data.lists.splice(new_index2, 0, data.lists.splice(old_index2, 1)[0]);
     }
-    
+
     document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key = new_index2;
     document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key = old_index2;
 
     satus.storage.set('data', JSON.stringify(data));
+}
+
+function importData() {
+    satus.render({
+        type: 'dialog',
+        
+        select_file: {
+            type: 'button',
+            label: 'selectFile',
+            onclick: function() {
+                var input = document.createElement('input');
+
+                input.type = 'file';
+
+                input.addEventListener('change', function() {
+                    var file_reader = new FileReader();
+
+                    file_reader.onload = function() {
+                        var data = JSON.parse(this.result);
+                        
+                        for (var key in data) {
+                            satus.storage.set(key, data[key]);
+                        }
+                        
+                        if (location.href.indexOf('action=import') !== -1) {
+                            window.close();
+                        } else {
+                            document.querySelector('.satus-dialog__scrim').click();
+                            
+                            satus.render({
+                                type: 'dialog',
+
+                                message: {
+                                    type: 'text',
+                                    label: 'dataImportedSuccessfully'
+                                },
+                                section: {
+                                    type: 'section',
+                                    class: 'controls',
+
+                                    ok: {
+                                        type: 'button',
+                                        label: 'ok',
+                                        onclick: function() {
+                                            document.querySelector('.satus-dialog__scrim').click();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    };
+
+                    file_reader.readAsText(this.files[0]);
+                });
+
+                input.click();
+            }
+        }
+    });
+}
+
+function exportData() {
+    var blob = new Blob([JSON.stringify(satus.storage.data)], {
+        type: 'application/json;charset=utf-8'
+    });
+
+    chrome.downloads.download({
+        url: URL.createObjectURL(blob),
+        filename: 'todo.json',
+        saveAs: true
+    }, function() {
+        if (location.href.indexOf('action=export') !== -1) {
+            window.close();
+        } else {
+            document.querySelector('.satus-dialog__scrim').click();
+            
+            satus.render({
+                type: 'dialog',
+
+                message: {
+                    type: 'text',
+                    label: 'dataExportedSuccessfully'
+                },
+                section: {
+                    type: 'section',
+                    class: 'controls',
+
+                    ok: {
+                        type: 'button',
+                        label: 'ok',
+                        onclick: function() {
+                            document.querySelector('.satus-dialog__scrim').click();
+                        }
+                    }
+                }
+            });
+        }
+    });
 }

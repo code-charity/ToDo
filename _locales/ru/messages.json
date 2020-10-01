@@ -1,0 +1,41 @@
+{
+    "lists": {
+        "message": "Списки"
+    },
+    "export": {
+        "message": "Экспорт"
+    },
+    "import": {
+        "message": "Импорт"
+    },
+    "name": {
+        "message": "Название"
+    },
+    "create": {
+        "message": "Создать"
+    },
+    "noTasks": {
+        "message": "Нет задач"
+    },
+    "language": {
+        "message": "Язык"
+    },
+    "dataImportedSuccessfully": {
+        "message": "Данные успешно импортированы"
+    },
+    "dataExportedSuccessfully": {
+        "message": "Данные успешно экспортированы"
+    },
+    "selectFile": {
+        "message": "Выберите файл"
+    },
+    "ok": {
+        "message": "Окей"
+    },
+    "encryption": {
+        "message": "Шифрование"
+    },
+    "myTasks": {
+        "message": "Мои задачи"
+    }
+}

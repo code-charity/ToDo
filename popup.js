@@ -12,7 +12,6 @@
 /*---------------------------------------------------------------
 # CREATE
 ---------------------------------------------------------------*/
-
 function create() {
     var main = document.querySelector('.satus-main'),
         history_item = main.history[main.history.length - 1],
@@ -33,13 +32,13 @@ function create() {
             name: value,
             value: false
         });
-        
+
         index = history_item.storage_key;
     }
-    
+
     satus.storage.set('data', JSON.stringify(data));
 
-    Satus.render(render(index), container);
+    satus.render(render(index), container);
 
     document.querySelector('.satus-dialog__scrim').click();
 }
@@ -58,7 +57,7 @@ function remove() {
         var key = this.parentNode.querySelector('.satus-switch').dataset.key;
 
         data.lists[history_item.storage_key].items.splice(key, 1);
-        
+
         satus.storage.set('data', JSON.stringify(data));
 
         update();
@@ -80,36 +79,34 @@ function update(container) {
     var self = (this === window ? document.querySelector('.satus-main') : this),
         item = self.history[self.history.length - 1],
         id = item.appearanceKey,
-        data = JSON.parse(Satus.storage.get('data') || '{}'),
+        data = JSON.parse(satus.storage.get('data') || '{}'),
         index = -1;
 
-    if (!Satus.isset(container)) {
+    if (!satus.isset(container)) {
         container = document.querySelector('.satus-main__container');
     }
 
     document.body.dataset.appearance = id;
     container.dataset.appearance = id;
 
-    document.querySelector('.satus-text--title').innerText = Satus.locale.getMessage(item.label) || 'Lists';
+    document.querySelector('.satus-text--title').innerText = satus.locale.getMessage(item.label) || satus.locale.getMessage('lists');
 
     container.querySelector('.satus-scrollbar__content').innerHTML = '';
 
     if (item.appearanceKey === 'home') {
         if (Object.keys(data).length === 0) {
             satus.storage.set('data', JSON.stringify({
-                lists: [
-                    {
-                        name: 'myTasks',
-                        items: []
-                    }
-                ]
+                lists: [{
+                    name: satus.locale.getMessage('myTasks'),
+                    items: []
+                }]
             }));
         }
     } else if (item.appearanceKey === 'list') {
         index = item.storage_key;
     }
-    
-    Satus.render(render(index), container.querySelector('.satus-scrollbar__content'));
+
+    satus.render(render(index), container.querySelector('.satus-scrollbar__content'));
 }
 
 
@@ -158,7 +155,7 @@ function render(index) {
             var container = {
                 type: 'section',
                 class: 'satus-section--main',
-                
+
                 text: {
                     type: 'text',
                     class: 'satus-text--message',
@@ -176,7 +173,7 @@ function render(index) {
             for (var i = 0, l = object.items.length; i < l; i++) {
                 container[i] = {
                     type: 'section',
-                    
+
                     checkbox: {
                         type: 'switch',
                         class: 'satus-switch--checkbox',
@@ -192,7 +189,7 @@ function render(index) {
                                 data = JSON.parse(satus.storage.get('data'));
 
                             data.lists[history_item.storage_key].items[this.dataset.key].value = this.querySelector('input').checked;
-                            
+
                             satus.storage.set('data', JSON.stringify(data));
                         }
                     },
@@ -206,7 +203,7 @@ function render(index) {
             }
         }
     }
-    
+
     return container;
 }
 
@@ -217,24 +214,120 @@ function render(index) {
 
 function change(old_index, new_index) {
     var main = document.querySelector('.satus-main'),
-        data = JSON.parse(Satus.storage.get('data')),
+        data = JSON.parse(satus.storage.get('data')),
         old_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key),
         new_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key);
 
-    console.log(old_index, new_index);    
-    
     if (main.history.length > 1) {
         var index = main.history[main.history.length - 1].storage_key;
-        
+
         data.lists[index].items.splice(new_index2, 0, data.lists[index].items.splice(old_index2, 1)[0]);
     } else {
         data.lists.splice(new_index2, 0, data.lists.splice(old_index2, 1)[0]);
     }
-    
+
     document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key = new_index2;
     document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key = old_index2;
 
     satus.storage.set('data', JSON.stringify(data));
+}
+
+function importData() {
+    satus.render({
+        type: 'dialog',
+        
+        select_file: {
+            type: 'button',
+            label: 'selectFile',
+            onclick: function() {
+                var input = document.createElement('input');
+
+                input.type = 'file';
+
+                input.addEventListener('change', function() {
+                    var file_reader = new FileReader();
+
+                    file_reader.onload = function() {
+                        var data = JSON.parse(this.result);
+                        
+                        for (var key in data) {
+                            satus.storage.set(key, data[key]);
+                        }
+                        
+                        if (location.href.indexOf('action=import') !== -1) {
+                            window.close();
+                        } else {
+                            document.querySelector('.satus-dialog__scrim').click();
+                            
+                            satus.render({
+                                type: 'dialog',
+
+                                message: {
+                                    type: 'text',
+                                    label: 'dataImportedSuccessfully'
+                                },
+                                section: {
+                                    type: 'section',
+                                    class: 'controls',
+
+                                    ok: {
+                                        type: 'button',
+                                        label: 'ok',
+                                        onclick: function() {
+                                            document.querySelector('.satus-dialog__scrim').click();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    };
+
+                    file_reader.readAsText(this.files[0]);
+                });
+
+                input.click();
+            }
+        }
+    });
+}
+
+function exportData() {
+    var blob = new Blob([JSON.stringify(satus.storage.data)], {
+        type: 'application/json;charset=utf-8'
+    });
+
+    chrome.downloads.download({
+        url: URL.createObjectURL(blob),
+        filename: 'todo.json',
+        saveAs: true
+    }, function() {
+        if (location.href.indexOf('action=export') !== -1) {
+            window.close();
+        } else {
+            document.querySelector('.satus-dialog__scrim').click();
+            
+            satus.render({
+                type: 'dialog',
+
+                message: {
+                    type: 'text',
+                    label: 'dataExportedSuccessfully'
+                },
+                section: {
+                    type: 'section',
+                    class: 'controls',
+
+                    ok: {
+                        type: 'button',
+                        label: 'ok',
+                        onclick: function() {
+                            document.querySelector('.satus-dialog__scrim').click();
+                        }
+                    }
+                }
+            });
+        }
+    });
 }
 
 /*---------------------------------------------------------------
@@ -273,76 +366,90 @@ var Menu = {
                     type: 'dialog',
                     class: 'satus-dialog--vertical-menu',
 
+                    language: {
+                        type: 'select',
+                        before: '<svg fill="var(--satus-theme-primary)" viewBox="0 0 24 24"><path d="M12.9 15l-2.6-2.4c1.8-2 3-4.2 3.8-6.6H17V4h-7V2H8v2H1v2h11.2c-.7 2-1.8 3.8-3.2 5.3-1-1-1.7-2.1-2.3-3.3h-2c.7 1.6 1.7 3.2 3 4.6l-5.1 5L4 19l5-5 3.1 3.1.8-2zm5.6-5h-2L12 22h2l1.1-3H20l1.1 3h2l-4.5-12zm-2.6 7l1.6-4.3 1.6 4.3H16z" /></svg>',
+                        label: 'language',
+                        options: [
+                            {
+                                label: 'English',
+                                value: 'en'
+                            },
+                            {
+                                label: 'Русский',
+                                value: 'ru'
+                            }
+                        ],
+                        onchange: function(name, value) {
+                            satus.locale.import(value, function() {
+                                var self = (this === window ? document.querySelector('.satus-main') : this),
+                                    item = self.history[self.history.length - 1];
+
+                                document.querySelector('.satus-text--title').innerText = satus.locale.getMessage(item.label) || satus.locale.getMessage('lists');
+
+                                document.querySelector('.satus-dialog .satus-select__label').innerText = satus.locale.getMessage('language');
+                                document.querySelector('.satus-dialog .satus-switch__label').innerText = satus.locale.getMessage('encryption');
+                                document.querySelectorAll('.satus-dialog .satus-button__label')[0].innerText = satus.locale.getMessage('export');
+                                document.querySelectorAll('.satus-dialog .satus-button__label')[1].innerText = satus.locale.getMessage('import');
+                            });
+                        }
+                    },
+                    encryption: {
+                        type: 'switch',
+                        before: '<svg fill="none" stroke="var(--satus-theme-primary)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><defs/><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>',
+                        label: 'encryption',
+                        onclick: function() {
+                            setTimeout(function() {
+                                if (satus.storage.get('encryption') === true) {
+                                    satus.render({
+                                        type: 'dialog',
+                                        
+                                        title: {
+                                            type: 'text',
+                                            label: 'password'
+                                        },
+                                        text_field: {
+                                            type: 'text-field',
+                                            class: 'satus-text-field--password'
+                                        },
+                                        button: {
+                                            type: 'button',
+                                            label: 'ok',
+                                            onclick: async function() {
+                                                //satus.storage.set('data', await satus.aes.encrypt(satus.storage.get('data'), document.querySelector('.satus-text-field--password').value));
+                                            }
+                                        }
+                                    });
+                                }
+                            }, 100);
+                        }
+                    },
                     export: {
                         type: 'button',
                         label: 'export',
-                        before: '<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
+                        before: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--satus-theme-primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
                         onclick: function() {
-                            chrome.runtime.sendMessage({
-                                name: 'download',
-                                filename: 'todo.json',
-                                value: satus.storage.get('data')
-                            });
+                            if (location.href.indexOf('/options.html') !== -1) {
+                                exportData();
+                            } else {
+                                chrome.tabs.create({
+                                    url: 'options.html?action=export'
+                                });
+                            }
                         }
                     },
                     import: {
                         type: 'button',
                         label: 'import',
-                        before: '<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+                        before: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--satus-theme-primary)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
                         onclick: function() {
-                            try {
-                                var input = document.createElement('input');
-
-                                input.type = 'file';
-
-                                input.addEventListener('change', function() {
-                                    var file_reader = new FileReader();
-
-                                    file_reader.onload = function() {
-                                        var data = JSON.parse(this.result);
-
-                                        for (var i in data) {
-                                            satus.storage.set(i, data[i]);
-                                        }
-
-                                        satus.render({
-                                            type: 'dialog',
-
-                                            message: {
-                                                type: 'text',
-                                                label: 'successfullyImportedSettings'
-                                            },
-                                            section: {
-                                                type: 'section',
-                                                class: 'controls',
-
-                                                cancel: {
-                                                    type: 'button',
-                                                    label: 'cancel',
-                                                    onclick: function() {
-                                                        var scrim = document.querySelectorAll('.satus-dialog__scrim');
-
-                                                        scrim[scrim.length - 1].click();
-                                                    }
-                                                },
-                                                ok: {
-                                                    type: 'button',
-                                                    label: 'ok',
-                                                    onclick: function() {
-                                                        var scrim = document.querySelectorAll('.satus-dialog__scrim');
-
-                                                        scrim[scrim.length - 1].click();
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    };
-
-                                    file_reader.readAsText(this.files[0]);
+                            if (location.href.indexOf('/options.html') !== -1) {
+                                importData();
+                            } else {
+                                chrome.tabs.create({
+                                    url: 'options.html?action=import'
                                 });
-
-                                input.click();
-                            } catch (err) {}
+                            }
                         }
                     }
                 }
@@ -368,9 +475,15 @@ Menu.main = {
 ---------------------------------------------------------------*/
 
 satus.storage.import(function() {
-    satus.locale.import(function() {
+    satus.locale.import(satus.storage.get('language'), function() {
         satus.modules.updateStorageKeys(Menu, function() {
-            satus.render(Menu);
+            if (location.href.indexOf('action=import') !== -1) {
+                importData();
+            } else if (location.href.indexOf('action=export') !== -1) {
+                exportData();
+            } else {
+                satus.render(Menu);
+            }
         });
     });
 });
