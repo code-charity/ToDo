@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------
+>>> HEADER
+---------------------------------------------------------------*/
+
 var Menu = {
     header: {
         type: 'header',
@@ -11,17 +15,12 @@ var Menu = {
                 class: 'satus-button--back',
                 before: '<svg stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M14 18l-6-6 6-6"/></svg>',
                 onclick: function() {
-                    if (document.querySelector('.satus-dialog__scrim')) {
-                        document.querySelector('.satus-dialog__scrim').click();
-                    } else {
-                        document.querySelector('.satus-main').back();
-                    }
+                    document.querySelector('.satus-main').back();
                 }
             },
             title: {
                 type: 'text',
-                class: 'satus-text--title',
-                innerText: ''
+                class: 'satus-text--title'
             }
         },
         section_end: {
@@ -30,27 +29,27 @@ var Menu = {
 
             button_vert: {
                 type: 'button',
-                icon: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
-                onClickRender: {
+                before: '<svg stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
+                onclick: {
                     type: 'dialog',
                     class: 'satus-dialog--vertical-menu',
 
                     export: {
                         type: 'button',
-                        label: 'Export',
-                        before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
+                        label: 'export',
+                        before: '<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
                         onclick: function() {
                             chrome.runtime.sendMessage({
                                 name: 'download',
                                 filename: 'todo.json',
-                                value: Satus.storage.get('data')
+                                value: satus.storage.get('data')
                             });
                         }
                     },
                     import: {
                         type: 'button',
-                        label: 'Import',
-                        before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+                        label: 'import',
+                        before: '<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
                         onclick: function() {
                             try {
                                 var input = document.createElement('input');
@@ -64,27 +63,19 @@ var Menu = {
                                         var data = JSON.parse(this.result);
 
                                         for (var i in data) {
-                                            Satus.storage.set(i, data[i]);
+                                            satus.storage.set(i, data[i]);
                                         }
 
-                                        Satus.render({
+                                        satus.render({
                                             type: 'dialog',
 
                                             message: {
                                                 type: 'text',
-                                                label: 'successfullyImportedSettings',
-                                                style: {
-                                                    'width': '100%',
-                                                    'opacity': '.8'
-                                                }
+                                                label: 'successfullyImportedSettings'
                                             },
                                             section: {
                                                 type: 'section',
                                                 class: 'controls',
-                                                style: {
-                                                    'justify-content': 'flex-end',
-                                                    'display': 'flex'
-                                                },
 
                                                 cancel: {
                                                     type: 'button',
@@ -97,7 +88,7 @@ var Menu = {
                                                 },
                                                 ok: {
                                                     type: 'button',
-                                                    label: 'OK',
+                                                    label: 'ok',
                                                     onclick: function() {
                                                         var scrim = document.querySelectorAll('.satus-dialog__scrim');
 
@@ -112,12 +103,7 @@ var Menu = {
                                 });
 
                                 input.click();
-                            } catch (err) {
-                                chrome.runtime.sendMessage({
-                                    name: 'dialog-error',
-                                    value: err
-                                });
-                            }
+                            } catch (err) {}
                         }
                     }
                 }

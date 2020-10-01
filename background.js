@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------
+>>> BACKGROUND
+---------------------------------------------------------------*/
+
 chrome.runtime.onMessage.addListener(function(request, sender) {
     if (request.name === 'download') {
         chrome.permissions.request({
@@ -14,12 +18,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
                         filename: request.filename,
                         saveAs: true
                     });
-                } catch (err) {
-                    chrome.runtime.sendMessage({
-                        name: 'satus-error',
-                        value: err
-                    });
-                }
+                } catch (err) {}
             } else {
                 chrome.runtime.sendMessage({
                     name: 'satus-error',

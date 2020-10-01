@@ -1,68 +1,86 @@
-function change(old_index, new_index) {
+/*---------------------------------------------------------------
+>>> FUNCTIONS
+-----------------------------------------------------------------
+# Create
+# Remove
+# Update
+# Render
+# Other
+---------------------------------------------------------------*/
+
+/*---------------------------------------------------------------
+# CREATE
+---------------------------------------------------------------*/
+
+function create() {
     var main = document.querySelector('.satus-main'),
-        data = JSON.parse(Satus.storage.get('data') || '{}'),
-        data2 = data,
-        clone;
+        history_item = main.history[main.history.length - 1],
+        data = JSON.parse(satus.storage.get('data')),
+        value = document.querySelector('.satus-text-field--value').value,
+        container = document.querySelector('.satus-main .satus-scrollbar__content'),
+        index = -1;
 
-    if (main.history.length > 1) {
-        data = data[main.history[main.history.length - 1].storage_key];
+    container.innerHTML = '';
+
+    if (history_item.appearanceKey === 'home') {
+        data.lists.push({
+            name: value,
+            items: []
+        });
+    } else {
+        data.lists[history_item.storage_key].items.push({
+            name: value,
+            value: false
+        });
+        
+        index = history_item.storage_key;
     }
+    
+    satus.storage.set('data', JSON.stringify(data));
 
-    old_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key);
-    new_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key);
+    Satus.render(render(index), container);
 
-    clone = Object.assign(data[old_index2]);
-
-    data[old_index2] = data[new_index2];
-    data[new_index2] = clone;
-
-    Satus.storage.set('data', JSON.stringify(data2));
+    document.querySelector('.satus-dialog__scrim').click();
 }
+
+
+/*---------------------------------------------------------------
+# REMOVE
+---------------------------------------------------------------*/
 
 function remove() {
     var main = document.querySelector('.satus-main'),
         history_item = main.history[main.history.length - 1],
-        data = JSON.parse(Satus.storage.get('data') || '{}');
+        data = JSON.parse(satus.storage.get('data'));
 
     if (main.history.length > 1) {
         var key = this.parentNode.querySelector('.satus-switch').dataset.key;
 
-        delete data[history_item.storage_key][key];
-        delete history_item[key];
-
-        Satus.storage.set('data', JSON.stringify(data));
-
-        var object = Object.assign(history_item);
-
-        delete object.type;
-
-        document.querySelector('.satus-scrollbar__content').innerHTML = '';
+        data.lists[history_item.storage_key].items.splice(key, 1);
+        
+        satus.storage.set('data', JSON.stringify(data));
 
         update();
     } else {
-        delete data[this.parentNode.querySelector('.satus-folder').dataset.key];
+        data.lists.splice(this.parentNode.querySelector('.satus-folder').dataset.key, 1);
 
-        Satus.storage.set('data', JSON.stringify(data));
-
-        document.querySelector('.satus-scrollbar__content').innerHTML = '';
+        satus.storage.set('data', JSON.stringify(data));
 
         update();
     }
 }
+
+
+/*---------------------------------------------------------------
+# UPDATE
+---------------------------------------------------------------*/
 
 function update(container) {
     var self = (this === window ? document.querySelector('.satus-main') : this),
         item = self.history[self.history.length - 1],
         id = item.appearanceKey,
         data = JSON.parse(Satus.storage.get('data') || '{}'),
-        ui = {
-            list: {
-                type: 'list',
-                compact: true,
-                sortable: true,
-                onchange: change
-            }
-        };
+        index = -1;
 
     if (!Satus.isset(container)) {
         container = document.querySelector('.satus-main__container');
@@ -77,177 +95,143 @@ function update(container) {
 
     if (item.appearanceKey === 'home') {
         if (Object.keys(data).length === 0) {
-            ui.list = {
+            satus.storage.set('data', JSON.stringify({
+                lists: [
+                    {
+                        name: 'myTasks',
+                        items: []
+                    }
+                ]
+            }));
+        }
+    } else if (item.appearanceKey === 'list') {
+        index = item.storage_key;
+    }
+    
+    Satus.render(render(index), container.querySelector('.satus-scrollbar__content'));
+}
+
+
+/*---------------------------------------------------------------
+# RENDER
+---------------------------------------------------------------*/
+
+function render(index) {
+    var object = JSON.parse(satus.storage.get('data')).lists;
+
+    if (index === -1) {
+        var container = {
+            type: 'list',
+            compact: true,
+            sortable: true,
+            onchange: change
+        };
+
+        for (var i = 0, l = object.length; i < l; i++) {
+            container[i] = {
+                type: 'section',
+
+                folder: {
+                    type: 'folder',
+                    label: object[i].name,
+                    before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
+                    appearanceKey: 'list',
+                    storage_key: String(i),
+                    dataset: {
+                        key: i
+                    }
+                },
+
+                button: {
+                    type: 'button',
+                    class: 'satus-button--remove',
+                    before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+                    onclick: remove
+                }
+            };
+        }
+    } else {
+        object = object[index];
+
+        if (object.items.length === 0) {
+            var container = {
+                type: 'section',
+                class: 'satus-section--main',
+                
+                text: {
+                    type: 'text',
+                    class: 'satus-text--message',
+                    label: 'noTasks'
+                }
+            };
+        } else {
+            var container = {
                 type: 'list',
                 compact: true,
                 sortable: true,
-                onchange: change,
+                onchange: change
+            };
 
-                0: {
+            for (var i = 0, l = object.items.length; i < l; i++) {
+                container[i] = {
                     type: 'section',
+                    
+                    checkbox: {
+                        type: 'switch',
+                        class: 'satus-switch--checkbox',
+                        label: object.items[i].name,
+                        value: object.items[i].value,
+                        storage_key: String(i),
+                        dataset: {
+                            key: i
+                        },
+                        onchange: function() {
+                            var main = document.querySelector('.satus-main'),
+                                history_item = main.history[main.history.length - 1],
+                                data = JSON.parse(satus.storage.get('data'));
 
-                    folder: {
-                        type: 'folder',
-                        label: 'My Tasks',
-                        before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
-                        appearanceKey: 'list',
-                        storage_key: 0
+                            data.lists[history_item.storage_key].items[this.dataset.key].value = this.querySelector('input').checked;
+                            
+                            satus.storage.set('data', JSON.stringify(data));
+                        }
                     },
-
-
-                    button: {
+                    remove: {
                         type: 'button',
                         class: 'satus-button--remove',
                         before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
                         onclick: remove
                     }
-                }
-            };
-
-            data[0] = {
-                type: 'folder',
-                label: 'My Tasks'
-            };
-
-            Satus.storage.set('data', JSON.stringify(data));
-
-            data[0].storage_key = 0;
-        } else {
-            for (var key in data) {
-                ui.list[key] = {
-                    type: 'section'
                 };
-                ui.list[key].folder = data[key];
-                ui.list[key].folder.appearanceKey = 'list';
-                ui.list[key].folder.storage_key = key;
-                ui.list[key].folder.dataset = {
-                    key: key
-                };
-                ui.list[key].folder.before = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
-
-                ui.list[key].button = {
-                    type: 'button',
-                    class: 'satus-button--remove',
-                    before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-                    onclick: remove
-                };
-            }
-        }
-    } else if (item.appearanceKey === 'list') {
-        var has_tasks = false;
-
-        for (var key in item) {
-            if (item[key].hasOwnProperty('type')) {
-                has_tasks = true;
-            }
-        }
-
-        if (has_tasks === false) {
-            ui.list.class = 'satus-list--message';
-
-            ui.list.message = {
-                type: 'text',
-                innerText: 'No tasks'
-            };
-        } else {
-            for (var key in data[item.storage_key]) {
-                if (typeof data[item.storage_key][key] === 'object') {
-                    ui.list[key] = {
-                        type: 'section'
-                    };
-                    ui.list[key].folder = data[item.storage_key][key];
-                    ui.list[key].folder.class = 'satus-switch--checkbox';
-                    ui.list[key].folder.dataset = {
-                        key: key
-                    };
-                    ui.list[key].folder.onchange = function() {
-                        var main = document.querySelector('.satus-main'),
-                            history_item = main.history[main.history.length - 1],
-                            data = JSON.parse(Satus.storage.get('data') || '{}');
-
-                        data[history_item.storage_key][this.dataset.key].value = this.querySelector('input').checked;
-                        Satus.storage.set('data', JSON.stringify(data));
-                    };
-
-                    ui.list[key].button = {
-                        type: 'button',
-                        class: 'satus-button--remove',
-                        before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-                        onclick: remove
-                    };
-                }
             }
         }
     }
-
-    Satus.render(ui, container.querySelector('.satus-scrollbar__content'));
+    
+    return container;
 }
 
-function create() {
+
+/*---------------------------------------------------------------
+# OTHER
+---------------------------------------------------------------*/
+
+function change(old_index, new_index) {
     var main = document.querySelector('.satus-main'),
-        history_item = main.history[main.history.length - 1],
-        data = JSON.parse(Satus.storage.get('data') || '{}'),
-        value = document.querySelector('.satus-text-field--value').value;
+        data = JSON.parse(Satus.storage.get('data')),
+        old_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key),
+        new_index2 = Number(document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key);
 
-    if (history_item.appearanceKey === 'home') {
-        var key = new Date().getTime();
-
-        data[key] = {
-            type: 'folder',
-            label: value
-        };
-
-        Satus.storage.set('data', JSON.stringify(data));
-
-        history_item[key] = {
-            type: 'section',
-
-            folder: {
-                type: 'folder',
-                label: value,
-                before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
-                appearanceKey: 'list',
-                storage_key: key
-            }
-        };
-
-        document.querySelector('.satus-scrollbar__content').innerHTML = '';
-
-        update();
+    console.log(old_index, new_index);    
+    
+    if (main.history.length > 1) {
+        var index = main.history[main.history.length - 1].storage_key;
+        
+        data.lists[index].items.splice(new_index2, 0, data.lists[index].items.splice(old_index2, 1)[0]);
     } else {
-        var folder_key = history_item.storage_key,
-            task_key = new Date().getTime();
-
-        data[folder_key][task_key] = {
-            type: 'switch',
-            class: 'satus-switch--checkbox',
-            label: value
-        };
-
-        Satus.storage.set('data', JSON.stringify(data));
-
-        history_item[task_key] = {
-            type: 'section',
-
-            switch: {
-                type: 'switch',
-                class: 'satus-switch--checkbox',
-                label: value,
-                storage_key: task_key
-            },
-
-            button: {
-                type: 'button',
-                class: 'satus-button--remove',
-                before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-                onclick: remove
-            }
-        };
-
-        document.querySelector('.satus-scrollbar__content').innerHTML = '';
-
-        update();
+        data.lists.splice(new_index2, 0, data.lists.splice(old_index2, 1)[0]);
     }
+    
+    document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key = new_index2;
+    document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key = old_index2;
 
-    document.querySelector('.satus-dialog__scrim').click();
+    satus.storage.set('data', JSON.stringify(data));
 }
