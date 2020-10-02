@@ -301,32 +301,34 @@ function exportData() {
         filename: 'todo.json',
         saveAs: true
     }, function() {
-        if (location.href.indexOf('action=export') !== -1) {
-            window.close();
-        } else {
-            document.querySelector('.satus-dialog__scrim').click();
-            
-            satus.render({
-                type: 'dialog',
+        setTimeout(function() {
+            if (location.href.indexOf('action=export') !== -1) {
+                window.close();
+            } else {
+                document.querySelector('.satus-dialog__scrim').click();
+                
+                satus.render({
+                    type: 'dialog',
 
-                message: {
-                    type: 'text',
-                    label: 'dataExportedSuccessfully'
-                },
-                section: {
-                    type: 'section',
-                    class: 'controls',
+                    message: {
+                        type: 'text',
+                        label: 'dataExportedSuccessfully'
+                    },
+                    section: {
+                        type: 'section',
+                        class: 'controls',
 
-                    ok: {
-                        type: 'button',
-                        label: 'ok',
-                        onclick: function() {
-                            document.querySelector('.satus-dialog__scrim').click();
+                        ok: {
+                            type: 'button',
+                            label: 'ok',
+                            onclick: function() {
+                                document.querySelector('.satus-dialog__scrim').click();
+                            }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
+        }, 100);
     });
 }
 
