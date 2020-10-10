@@ -7,7 +7,7 @@
 <h3 align="center">To-Do</h3>
 
 <p align="center">
-    Make To-Do lists and more.
+    Make checklists and more.
     <br>
     <a href="https://chrome.google.com/webstore/detail/to-do/mniboiicchcpkffcdlaocnkfpbdihgii">Get Started »</a>
 </p>
