@@ -204,24 +204,32 @@ html
     --satus-theme-tabs-border: #dfdfdf;
 }
 
-/*--------------------------------------------------------------
+/*---------------------------------------------------------------
 >>> TABLE
---------------------------------------------------------------*/
+-----------------------------------------------------------------
+1.0 Head
+2.0 Body
+3.0 Paging
+---------------------------------------------------------------*/
 
 .satus-table
 {
-    font-size: .875rem;
+    font-size: 14px;
 
     position: relative;
 
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
+
     box-sizing: border-box;
 
     border: 1px solid #ececec;
     border-radius: 6px;
 }
+
+
+/*---------------------------------------------------------------
+1.0 HEAD
+---------------------------------------------------------------*/
 
 .satus-table__head
 {
@@ -308,52 +316,51 @@ html
     border-left: 4px solid transparent;
 }
 
+
+/*---------------------------------------------------------------
+2.0 BODY
+---------------------------------------------------------------*/
+
 .satus-table__body
 {
     overflow: hidden;
-    flex: 1;
 
     width: 100%;
-    height: calc(100% - 48px);
+    height: calc(100% - 39px);
 
     background: #fff;
+
+    flex: 1;
 }
 
 .satus-table__row
 {
-    display: flex;
-    
     padding: 0 8px;
-    
-    box-sizing: border-box;
-    
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    
-    flex-wrap: wrap;
+
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 
 .satus-table__row:nth-child(2n)
 {
-    background: rgba(0,0,0,.03)
+    background: rgba(0,0,0,.03);
 }
 
 .satus-table__cell
 {
+    display: inline-block;
     overflow: hidden;
 
     box-sizing: border-box;
     padding: 8px 8px 8px 0;
 
     white-space: nowrap;
+    text-overflow: ellipsis;
     word-wrap: break-word;
     -webkit-hyphens: auto;
        -moz-hyphens: auto;
             hyphens: auto;
 
     overflow-wrap: break-word;
-    flex-shrink: 0;
-    
-    text-overflow: ellipsis;
 }
 
 .satus-table__cell:last-child
@@ -363,17 +370,21 @@ html
 
 .satus-table__cell input
 {
-    width: 100%;
-    margin: 5px 0;
-    border: 1px solid #d2d2d2;
     box-sizing: border-box;
-    padding: 1px 2px;
-    border-radius: 4px;
+    width: 100%;
     height: calc(100% - 10px);
-    outline: none
+    margin: 5px 0;
+    padding: 1px 2px;
+
+    border: 1px solid #d2d2d2;
+    border-radius: 4px;
+    outline: none;
 }
 
 
+/*---------------------------------------------------------------
+3.0 PAGING
+---------------------------------------------------------------*/
 
 .satus-table__paging > button
 {
@@ -524,11 +535,6 @@ body[data-appearance='home'] .satus-text--title
     margin: 0 0 0 8px;
 }
 
-.satus-select__label
-{
-    flex: 1
-}
-
 .satus-select__value
 {
     font-size: 12px;
@@ -653,7 +659,6 @@ body[data-appearance='home'] .satus-text--title
 .satus-switch__label
 {
     padding: 0 16px 0 0;
-    flex: 1;
 }
 
 
@@ -1275,7 +1280,7 @@ body[data-appearance='home'] .satus-text--title
 
 .satus-dialog .satus-button
 {
-    justify-content: flex-start
+    justify-content: flex-start;
 }
 
 /*---------------------------------------------------------------

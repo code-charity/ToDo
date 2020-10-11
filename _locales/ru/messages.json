@@ -1,6 +1,15 @@
 {
-    "lists": {
-        "message": "Списки"
+    "create": {
+        "message": "Создать"
+    },
+    "dataExportedSuccessfully": {
+        "message": "Данные успешно экспортированы"
+    },
+    "dataImportedSuccessfully": {
+        "message": "Данные успешно импортированы"
+    },
+    "encryption": {
+        "message": "Шифрование"
     },
     "export": {
         "message": "Экспорт"
@@ -8,34 +17,37 @@
     "import": {
         "message": "Импорт"
     },
+    "language": {
+        "message": "Язык"
+    },
+    "lists": {
+        "message": "Списки"
+    },
+    "myTasks": {
+        "message": "Мои задачи"
+    },
     "name": {
         "message": "Название"
     },
-    "create": {
-        "message": "Создать"
+    "noLists": {
+        "message": "Нет списков задач"
     },
     "noTasks": {
         "message": "Нет задач"
     },
-    "language": {
-        "message": "Язык"
-    },
-    "dataImportedSuccessfully": {
-        "message": "Данные успешно импортированы"
-    },
-    "dataExportedSuccessfully": {
-        "message": "Данные успешно экспортированы"
-    },
-    "selectFile": {
-        "message": "Выберите файл"
-    },
     "ok": {
         "message": "Окей"
     },
-    "encryption": {
-        "message": "Шифрование"
+    "password": {
+        "message": "Пароль"
     },
-    "myTasks": {
-        "message": "Мои задачи"
+    "remove": {
+        "message": "Удалить"
+    },
+    "rename": {
+        "message": "Переименовать"
+    },
+    "selectFile": {
+        "message": "Выберите файл"
     }
 }

@@ -1,6 +1,15 @@
 {
-    "lists": {
-        "message": "Lists"
+    "create": {
+        "message": "Create"
+    },
+    "dataExportedSuccessfully": {
+        "message": "Data exported successfully"
+    },
+    "dataImportedSuccessfully": {
+        "message": "Data imported successfully"
+    },
+    "encryption": {
+        "message": "Encryption"
     },
     "export": {
         "message": "Export"
@@ -8,34 +17,37 @@
     "import": {
         "message": "Import"
     },
+    "language": {
+        "message": "Language"
+    },
+    "lists": {
+        "message": "Lists"
+    },
+    "myTasks": {
+        "message": "My tasks"
+    },
     "name": {
         "message": "Name"
     },
-    "create": {
-        "message": "Create"
+    "noLists": {
+        "message": "No lists"
     },
     "noTasks": {
         "message": "No tasks"
     },
-    "language": {
-        "message": "Language"
-    },
-    "dataImportedSuccessfully": {
-        "message": "Data imported successfully"
-    },
-    "dataExportedSuccessfully": {
-        "message": "Data exported successfully"
-    },
-    "selectFile": {
-        "message": "Select file"
-    },
     "ok": {
         "message": "OK"
     },
-    "encryption": {
-        "message": "Encryption"
+    "password": {
+        "message": "Password"
     },
-    "myTasks": {
-        "message": "My tasks"
+    "remove": {
+        "message": "Remove"
+    },
+    "rename": {
+        "message": "Rename"
+    },
+    "selectFile": {
+        "message": "Select file"
     }
 }

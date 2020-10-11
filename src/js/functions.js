@@ -3,6 +3,7 @@
 -----------------------------------------------------------------
 # Create
 # Remove
+# Rename
 # Update
 # Render
 # Other
@@ -11,6 +12,7 @@
 /*---------------------------------------------------------------
 # CREATE
 ---------------------------------------------------------------*/
+
 function create() {
     var main = document.querySelector('.satus-main'),
         history_item = main.history[main.history.length - 1],
@@ -35,11 +37,21 @@ function create() {
         index = history_item.storage_key;
     }
 
-    satus.storage.set('data', JSON.stringify(data));
+    satus.storage.data.data = JSON.stringify(data);
+    
+    if (satus.storage.get('encrypted') === true) {
+        (async function() {
+            chrome.storage.local.set({
+                data: await satus.aes.encrypt(satus.storage.get('data'), password)
+            });
+        })();
+    } else {
+        satus.storage.set('data', satus.storage.get('data'));
+    }
 
     satus.render(render(index), container);
 
-    document.querySelector('.satus-dialog__scrim').click();
+    document.querySelector('.satus-dialog').close();
 }
 
 
@@ -53,20 +65,68 @@ function remove() {
         data = JSON.parse(satus.storage.get('data'));
 
     if (main.history.length > 1) {
-        var key = this.parentNode.querySelector('.satus-switch').dataset.key;
+        var key = this.dataset.key;
 
         data.lists[history_item.storage_key].items.splice(key, 1);
 
-        satus.storage.set('data', JSON.stringify(data));
+        satus.storage.data.data = JSON.stringify(data);
+    
+        if (satus.storage.get('encrypted') === true) {
+            (async function() {
+                chrome.storage.local.set({
+                    data: await satus.aes.encrypt(satus.storage.get('data'), password)
+                });
+            })();
+        }
 
         update();
     } else {
-        data.lists.splice(this.parentNode.querySelector('.satus-folder').dataset.key, 1);
+        data.lists.splice(this.dataset.key, 1);
 
-        satus.storage.set('data', JSON.stringify(data));
+        satus.storage.data.data = JSON.stringify(data);
+    
+        if (satus.storage.get('encrypted') === true) {
+            (async function() {
+                chrome.storage.local.set({
+                    data: await satus.aes.encrypt(satus.storage.get('data'), password)
+                });
+            })();
+        } else {
+            satus.storage.set('data', satus.storage.get('data'));
+        }
 
         update();
     }
+}
+
+/*---------------------------------------------------------------
+# RENAME
+---------------------------------------------------------------*/
+
+function rename(name, key) {
+    var main = document.querySelector('.satus-main'),
+        history_item = main.history[main.history.length - 1],
+        data = JSON.parse(satus.storage.get('data'));
+
+    if (main.history.length > 1) {
+        data.lists[history_item.storage_key].items[key].name = name;
+    } else {
+        data.lists[key].name = name;
+    }
+    
+    satus.storage.data.data = JSON.stringify(data);
+    
+    if (satus.storage.get('encrypted') === true) {
+        (async function() {
+            chrome.storage.local.set({
+                data: await satus.aes.encrypt(satus.storage.get('data'), password)
+            });
+        })();
+    } else {
+        satus.storage.set('data', satus.storage.get('data'));
+    }
+
+    update();
 }
 
 
@@ -117,35 +177,125 @@ function render(index) {
     var object = JSON.parse(satus.storage.get('data')).lists;
 
     if (index === -1) {
-        var container = {
-            type: 'list',
-            compact: true,
-            sortable: true,
-            onchange: change
-        };
-
-        for (var i = 0, l = object.length; i < l; i++) {
-            container[i] = {
+        if (object.length === 0) {
+            var container = {
                 type: 'section',
+                class: 'satus-section--main',
 
-                folder: {
-                    type: 'folder',
-                    label: object[i].name,
-                    before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
-                    appearanceKey: 'list',
-                    storage_key: String(i),
-                    dataset: {
-                        key: i
-                    }
-                },
-
-                button: {
-                    type: 'button',
-                    class: 'satus-button--remove',
-                    before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-                    onclick: remove
+                text: {
+                    type: 'text',
+                    class: 'satus-text--message',
+                    label: 'noLists'
                 }
             };
+        } else {
+            var container = {
+                type: 'list',
+                compact: true,
+                sortable: true,
+                onchange: change
+            };
+
+            for (var i = 0, l = object.length; i < l; i++) {
+                container[i] = {
+                    type: 'section',
+
+                    folder: {
+                        type: 'folder',
+                        label: object[i].name,
+                        before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
+                        appearanceKey: 'list',
+                        storage_key: String(i),
+                        dataset: {
+                            key: i
+                        }
+                    },
+                    actions: {
+                        type: 'button',
+                        class: 'satus-button--menu',
+                        before: '<svg stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
+                        onclick: {
+                            type: 'dialog',
+                            class: 'satus-dialog--menu',
+                            style: {
+                                
+                            },
+                            
+                            button_rename: {
+                                type: 'button',
+                                label: 'rename',
+                                dataset: {
+                                    key: i
+                                },
+                                onclick: function() {
+                                    satus.render({
+                                        type: 'dialog',
+                                        class: 'satus-dialog--create',
+
+                                        label: {
+                                            type: 'text',
+                                            label: 'name'
+                                        },
+                                        text_field: {
+                                            type: 'text-field',
+                                            class: 'satus-text-field--value',
+                                            dataset: {
+                                                key: this.dataset.key
+                                            },
+                                            onkeydown: function(event) {
+                                                if (event.keyCode === 13) {
+                                                    rename(this.value, this.dataset.key);
+                                                    
+                                                    document.querySelector('.satus-dialog').close();
+                                                }
+                                            },
+                                            onrender: function() {
+                                                var self = this;
+
+                                                setTimeout(function() {
+                                                    self.focus();
+                                                });
+                                            }
+                                        },
+                                        section: {
+                                            type: 'section',
+
+                                            button: {
+                                                type: 'button',
+                                                label: 'rename',
+                                                dataset: {
+                                                    key: this.dataset.key
+                                                },
+                                                onclick: function() {
+                                                    rename(document.querySelector('.satus-text-field--value').value, this.dataset.key);
+                                                    
+                                                    document.querySelector('.satus-dialog').close();
+                                                }
+                                            }
+                                        }
+                                    });
+                                    
+                                    document.querySelector('.satus-dialog').close();
+                                }
+                            },
+                            button_remove: {
+                                type: 'button',
+                                label: 'remove',
+                                dataset: {
+                                    key: i
+                                },
+                                onclick: function() {
+                                    this.r = remove;
+                                    
+                                    this.r();
+                                    
+                                    document.querySelector('.satus-dialog').close();
+                                }
+                            }
+                        }
+                    }
+                };
+            }
         }
     } else {
         object = object[index];
@@ -189,14 +339,100 @@ function render(index) {
 
                             data.lists[history_item.storage_key].items[this.dataset.key].value = this.querySelector('input').checked;
 
-                            satus.storage.set('data', JSON.stringify(data));
+                            satus.storage.data.data = JSON.stringify(data);
+    
+                            if (satus.storage.get('encrypted') === true) {
+                                (async function() {
+                                    chrome.storage.local.set({
+                                        data: await satus.aes.encrypt(satus.storage.get('data'), password)
+                                    });
+                                })();
+                            }
                         }
                     },
-                    remove: {
+                    actions: {
                         type: 'button',
-                        class: 'satus-button--remove',
-                        before: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-                        onclick: remove
+                        class: 'satus-button--menu',
+                        before: '<svg stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
+                        onclick: {
+                            type: 'dialog',
+                            class: 'satus-dialog--menu',
+                            style: {
+                                
+                            },
+                            
+                            button_rename: {
+                                type: 'button',
+                                label: 'rename',
+                                dataset: {
+                                    key: i
+                                },
+                                onclick: function() {
+                                    satus.render({
+                                        type: 'dialog',
+                                        class: 'satus-dialog--create',
+
+                                        label: {
+                                            type: 'text',
+                                            label: 'name'
+                                        },
+                                        text_field: {
+                                            type: 'text-field',
+                                            class: 'satus-text-field--value',
+                                            dataset: {
+                                                key: this.dataset.key
+                                            },
+                                            onkeydown: function(event) {
+                                                if (event.keyCode === 13) {
+                                                    rename(this.value, this.dataset.key);
+                                                    
+                                                    document.querySelector('.satus-dialog').close();
+                                                }
+                                            },
+                                            onrender: function() {
+                                                var self = this;
+
+                                                setTimeout(function() {
+                                                    self.focus();
+                                                });
+                                            }
+                                        },
+                                        section: {
+                                            type: 'section',
+
+                                            button: {
+                                                type: 'button',
+                                                label: 'rename',
+                                                dataset: {
+                                                    key: this.dataset.key
+                                                },
+                                                onclick: function() {
+                                                    rename(document.querySelector('.satus-text-field--value').value, this.dataset.key);
+                                                    
+                                                    document.querySelector('.satus-dialog').close();
+                                                }
+                                            }
+                                        }
+                                    });
+                                    
+                                    document.querySelector('.satus-dialog').close();
+                                }
+                            },
+                            button_remove: {
+                                type: 'button',
+                                label: 'remove',
+                                dataset: {
+                                    key: i
+                                },
+                                onclick: function() {
+                                    this.r = remove;
+                                    
+                                    this.r();
+                                    
+                                    document.querySelector('.satus-dialog').close();
+                                }
+                            }
+                        }
                     }
                 };
             }
@@ -228,7 +464,17 @@ function change(old_index, new_index) {
     document.querySelectorAll('.satus-main .satus-list li')[old_index].querySelector('button').dataset.key = new_index2;
     document.querySelectorAll('.satus-main .satus-list li')[new_index].querySelector('button').dataset.key = old_index2;
 
-    satus.storage.set('data', JSON.stringify(data));
+    satus.storage.data.data = JSON.stringify(data);
+    
+    if (satus.storage.get('encrypted') === true) {
+        (async function() {
+            chrome.storage.local.set({
+                data: await satus.aes.encrypt(satus.storage.get('data'), password)
+            });
+        })();
+    } else {
+        satus.storage.set('data', satus.storage.get('data'));
+    }
 }
 
 function importData() {
@@ -294,39 +540,55 @@ function exportData() {
     var blob = new Blob([JSON.stringify(satus.storage.data)], {
         type: 'application/json;charset=utf-8'
     });
+    
+    satus.render({
+        type: 'dialog',
 
-    chrome.downloads.download({
-        url: URL.createObjectURL(blob),
-        filename: 'todo.json',
-        saveAs: true
-    }, function() {
-        setTimeout(function() {
-            if (location.href.indexOf('action=export') !== -1) {
-                window.close();
-            } else {
-                document.querySelector('.satus-dialog__scrim').click();
-                
-                satus.render({
-                    type: 'dialog',
+        export: {
+            type: 'button',
+            label: 'export',
+            onclick: function() {
+                chrome.permissions.request({
+                    permissions: ['downloads']
+                }, function(granted) {
+                    if (granted) {
+                        chrome.downloads.download({
+                            url: URL.createObjectURL(blob),
+                            filename: 'todo.json',
+                            saveAs: true
+                        }, function() {
+                            setTimeout(function() {
+                                if (location.href.indexOf('action=export') !== -1) {
+                                    window.close();
+                                } else {
+                                    document.querySelector('.satus-dialog__scrim').click();
+                                    
+                                    satus.render({
+                                        type: 'dialog',
 
-                    message: {
-                        type: 'text',
-                        label: 'dataExportedSuccessfully'
-                    },
-                    section: {
-                        type: 'section',
-                        class: 'controls',
+                                        message: {
+                                            type: 'text',
+                                            label: 'dataExportedSuccessfully'
+                                        },
+                                        section: {
+                                            type: 'section',
+                                            class: 'controls',
 
-                        ok: {
-                            type: 'button',
-                            label: 'ok',
-                            onclick: function() {
-                                document.querySelector('.satus-dialog__scrim').click();
-                            }
-                        }
+                                            ok: {
+                                                type: 'button',
+                                                label: 'ok',
+                                                onclick: function() {
+                                                    document.querySelector('.satus-dialog__scrim').click();
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            }, 100);
+                        });
                     }
                 });
             }
-        }, 100);
+        }
     });
 }
