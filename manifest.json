@@ -1,7 +1,8 @@
 {
     "manifest_version": 2,
     "name": "ToDo",
-    "version": "2.0",
+    "description": "With the To-Do extension you get a simple popup to capture your ideas, goals and daily tasks.",
+    "version": "2.0.1",
     "default_locale": "en",
     "icons": {
         "16": "assets/icons/16.png",
