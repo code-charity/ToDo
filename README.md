@@ -4,7 +4,7 @@
     </a>
 </p>
 
-<h3 align="center">To-Do</h3>
+<h3 align="center">ToDo</h3>
 
 <p align="center">
     Make checklists and more.
