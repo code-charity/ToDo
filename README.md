@@ -12,8 +12,6 @@
     <a href="https://chrome.google.com/webstore/detail/to-do/mniboiicchcpkffcdlaocnkfpbdihgii">Get Started »</a>
 </p>
 
-<br>
-
 ## :earth_americas: Translations
 - [ ] [Arabic](https://github.com/victor-savinov/todo/tree/master/_locales/ar/messages.json) `/ar/`
 - [ ] [Amharic](https://github.com/victor-savinov/todo/tree/master/_locales/am/messages.json) `/am/`
