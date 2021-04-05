@@ -1,53 +1,53 @@
 {
     "create": {
-        "message": "Create"
+        "message": "Erstellen"
     },
     "dataExportedSuccessfully": {
-        "message": "Data exported successfully"
+        "message": "Dateien erfolgreich exportiert"
     },
     "dataImportedSuccessfully": {
-        "message": "Data imported successfully"
+        "message": "Dateien erfolgreich importiert"
     },
     "encryption": {
-        "message": "Encryption"
+        "message": "Verschlüsselung"
     },
     "export": {
-        "message": "Export"
+        "message": "Exportieren"
     },
     "import": {
-        "message": "Import"
+        "message": "Importieren"
     },
     "language": {
-        "message": "Language"
+        "message": "Sprache"
     },
     "lists": {
-        "message": "Lists"
+        "message": "Listen"
     },
     "myTasks": {
-        "message": "My tasks"
+        "message": "Meine Aufgaben"
     },
     "name": {
         "message": "Name"
     },
     "noLists": {
-        "message": "No lists"
+        "message": "Keine Listen"
     },
     "noTasks": {
-        "message": "No tasks"
+        "message": "Keine Aufgaben"
     },
     "ok": {
         "message": "OK"
     },
     "password": {
-        "message": "Password"
+        "message": "Passwort"
     },
     "remove": {
-        "message": "Remove"
+        "message": "Entfernen"
     },
     "rename": {
-        "message": "Rename"
+        "message": "Umbenennen"
     },
     "selectFile": {
-        "message": "Select file"
+        "message": "Datei auswählen"
     }
 }
