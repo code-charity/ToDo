@@ -1,12 +1,33 @@
 {
+    "areYouSureYouWantToExportTheData": {
+        "message": "Are you sure you want to export the data?"
+    },
+    "areYouSureYouWantToImportTheData": {
+        "message": "Are you sure you want to import the data?"
+    },
+    "black": {
+        "message": "Black"
+    },
+    "cancel": {
+        "message": "Cancel"
+    },
     "create": {
         "message": "Create"
+    },
+    "dark": {
+        "message": "Dark"
     },
     "dataExportedSuccessfully": {
         "message": "Data exported successfully"
     },
     "dataImportedSuccessfully": {
         "message": "Data imported successfully"
+    },
+    "decryption": {
+        "message": "Decryption"
+    },
+    "description_ext": {
+        "message": "With the To-Do extension you get a simple popup to capture your ideas, goals and daily tasks."
     },
     "encryption": {
         "message": "Encryption"
@@ -20,14 +41,20 @@
     "language": {
         "message": "Language"
     },
+    "light": {
+        "message": "Light"
+    },
     "lists": {
         "message": "Lists"
     },
     "myTasks": {
         "message": "My tasks"
     },
-    "name": {
-        "message": "Name"
+    "newList": {
+        "message": "New list"
+    },
+    "newTask": {
+        "message": "New task"
     },
     "noLists": {
         "message": "No lists"
@@ -49,5 +76,8 @@
     },
     "selectFile": {
         "message": "Select file"
+    },
+    "theme": {
+        "message": "Theme"
     }
 }

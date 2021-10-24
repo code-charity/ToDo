@@ -1,12 +1,33 @@
 {
+    "areYouSureYouWantToExportTheData": {
+        "message": "Вы действительно хотите экспортировать данные?"
+    },
+    "areYouSureYouWantToImportTheData": {
+        "message": "Вы действительно хотите испортировать данные?"
+    },
+    "black": {
+        "message": "Черная"
+    },
+    "cancel": {
+        "message": "Отмена"
+    },
     "create": {
         "message": "Создать"
+    },
+    "dark": {
+        "message": "Темная"
     },
     "dataExportedSuccessfully": {
         "message": "Данные успешно экспортированы"
     },
     "dataImportedSuccessfully": {
         "message": "Данные успешно импортированы"
+    },
+    "decryption": {
+        "message": "Дешифрование"
+    },
+    "description_ext": {
+        "message": "With the To-Do extension you get a simple popup to capture your ideas, goals and daily tasks."
     },
     "encryption": {
         "message": "Шифрование"
@@ -20,14 +41,20 @@
     "language": {
         "message": "Язык"
     },
+    "light": {
+        "message": "Светлая"
+    },
     "lists": {
         "message": "Списки"
     },
     "myTasks": {
         "message": "Мои задачи"
     },
-    "name": {
-        "message": "Название"
+    "newList": {
+        "message": "Новый список"
+    },
+    "newTask": {
+        "message": "Новая задача"
     },
     "noLists": {
         "message": "Нет списков задач"
@@ -49,5 +76,8 @@
     },
     "selectFile": {
         "message": "Выберите файл"
+    },
+    "theme": {
+        "message": "Тема"
     }
 }

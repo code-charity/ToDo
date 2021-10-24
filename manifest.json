@@ -1,19 +1,19 @@
 {
     "manifest_version": 2,
     "name": "ToDo",
-    "description": "With the To-Do extension you get a simple popup to capture your ideas, goals and daily tasks.",
-    "version": "2.1.0",
+    "description": "__MSG_description_ext__",
+    "version": "3.0.0",
     "default_locale": "en",
     "icons": {
-        "16": "assets/icons/16.png",
-        "32": "assets/icons/32.png",
-        "48": "assets/icons/48.png",
-        "128": "assets/icons/128.png"
+        "16": "icons/16.png",
+        "32": "icons/32.png",
+        "48": "icons/48.png",
+        "128": "icons/128.png"
     },
     "browser_action": {
-        "default_popup": "popup.html"
+        "default_popup": "ui/popup.html"
     },
-    "options_page": "options.html",
+    "options_page": "ui/options.html",
     "optional_permissions": [
         "downloads"
     ],

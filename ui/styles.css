@@ -1,0 +1,73 @@
+/*--------------------------------------------------------------
+>>> SCRIPT
+----------------------------------------------------------------
+# 
+--------------------------------------------------------------*/
+
+.satus-header .satus-section--align-start {
+	max-width: calc(100% - 40px);
+}
+
+.satus-button--folder {
+	display: flex;
+	align-items: center;
+}
+
+.satus-button.satus-button--folder > svg {
+	min-width: 20px;
+    width: 20px;
+    margin: -2px 16px 0 0;
+}
+
+.satus-button--folder > .satus-span {
+	white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
+
+/*--------------------------------------------------------------
+# 
+--------------------------------------------------------------*/
+
+.satus-button--create {
+	position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #f8d266, #f17953);
+    box-shadow: 0 2px 1px 1px rgb(230, 109, 70, .7), 0 3px 5px rgb(0, 0, 0, .35);
+    border-radius: 50%;
+    color: #fff;
+}
+
+body[theme=dark] .satus-button--create {
+	background: linear-gradient(135deg, var(--satus-primary), rgb(45, 75, 159));
+    box-shadow: 0 2px 1px 1px rgb(45, 75, 159, .7), 0 3px 5px rgb(0, 0, 0, .35);
+}
+
+body[theme=black] .satus-button--create {
+	background: linear-gradient(135deg, var(--satus-primary), rgb(64, 64, 64));
+    box-shadow: 0 2px 1px 1px rgb(64, 64, 64, .7), 0 3px 5px rgb(0, 0, 0, .35);
+}
+
+.satus-button--create::before {
+	content: '';
+	position: absolute;
+	width: 14px;
+	height: 2px;
+	background: currentColor;
+	left: calc(50% - 7px);
+	top: calc(50% - 1px);
+}
+
+.satus-button--create::after {
+	content: '';
+	position: absolute;
+	width: 2px;
+	height: 14px;
+	background: currentColor;
+	left: calc(50% - 1px);
+	top: calc(50% - 7px);
+}
