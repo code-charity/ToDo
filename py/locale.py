@@ -144,7 +144,7 @@ def addLocales():
     ]
 
     for locale in locales:
-        if not os.path.exists(os.path.dirname("../_locales/" + locale)):
+        if not os.path.exists("../_locales/" + locale):
             pathlib.Path("../_locales/" + locale).mkdir(parents=True, exist_ok=True)
 
             file = io.open("../_locales/" + locale + '/messages.json', mode='w', encoding='utf-8')
