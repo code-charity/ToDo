@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/victor-savinov/to-do">
-        <img src="https://github.com/victor-savinov/icons/blob/master/to-do/raised-128.png">
+        <img src="https://github.com/victor-savinov/graphics/blob/master/icons/to-do/raised-128.png">
     </a>
 </p>
 
