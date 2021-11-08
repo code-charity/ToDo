@@ -12,382 +12,395 @@
 var password,
 	lists = [],
 	skeleton = {
-	component: 'base',
+		component: 'base',
 
-	header: {
-		component: 'header',
+		header: {
+			component: 'header',
 
-		section_1: {
-			component: 'section',
-			variant: 'align-start',
+			section_1: {
+				component: 'section',
+				variant: 'align-start',
 
-			back: {
-				component: 'button',
-				attr: {
-					'hidden': 'true'
-				},
-				on: {
-					click: 'layers.back'
-				},
-
-				svg: {
-					component: 'svg',
+				back: {
+					component: 'button',
 					attr: {
-						'viewBox': '0 0 24 24',
-						'fill': 'none',
-						'stroke-width': '1.5',
-						'stroke': 'currentColor'
+						'hidden': 'true'
+					},
+					on: {
+						click: 'layers.back'
 					},
 
-					path: {
-						component: 'path',
+					svg: {
+						component: 'svg',
 						attr: {
-							'd': 'M14 18l-6-6 6-6'
+							'viewBox': '0 0 24 24',
+							'fill': 'none',
+							'stroke-width': '1.5',
+							'stroke': 'currentColor'
+						},
+
+						path: {
+							component: 'path',
+							attr: {
+								'd': 'M14 18l-6-6 6-6'
+							}
 						}
 					}
-				}
-			},
-			title: {
-				component: 'span',
-				variant: 'title'
-			}
-		},
-		section_2: {
-			component: 'section',
-			variant: 'align-end',
-
-			menu: {
-                component: 'button',
-                on: {
-                    click: {
-                        component: 'modal',
-                        variant: 'vertical',
-
-                        label: {
-                        	component: 'span',
-                        	text: 'theme'
-                        },
-                        theme: {
-                        	component: 'tabs',
-                        	items: [
-                        		'light',
-                        		'dark',
-                        		'black'
-                        	]
-                        },
-                        divider: {
-                        	component: 'divider'
-                        },
-                        language: {
-							component: 'select',
-							on: {
-								change: function (name, value) {
-									var self = this;
-
-									satus.ajax('_locales/' + this.querySelector('select').value + '/messages.json', function (response) {
-										response = JSON.parse(response);
-
-										for (var key in response) {
-											satus.locale.strings[key] = response[key].message;
-										}
-
-										self.base.skeleton.header.section_1.title.rendered.textContent = satus.locale.get('languages');
-
-										self.base.skeleton.layers.rendered.update();
-									});
-								}
-							},
-							options: [{
-								value: 'en',
-								text: 'English'
-							}, {
-								value: 'ru',
-								text: 'Русский'
-							}, {
-								value: 'de',
-								text: 'Deutsch'
-							}],
-
-							svg: {
-								component: 'svg',
-								attr: {
-									'viewBox': '0 0 24 24',
-									'fill': 'currentColor'
-								},
-
-								path: {
-									component: 'path',
-									attr: {
-										'd': 'M12.9 15l-2.6-2.4c1.8-2 3-4.2 3.8-6.6H17V4h-7V2H8v2H1v2h11.2c-.7 2-1.8 3.8-3.2 5.3-1-1-1.7-2.1-2.3-3.3h-2c.7 1.6 1.7 3.2 3 4.6l-5.1 5L4 19l5-5 3.1 3.1.8-2zm5.6-5h-2L12 22h2l1.1-3H20l1.1 3h2l-4.5-12zm-2.6 7l1.6-4.3 1.6 4.3H16z'
-									}
-								}
-							},
-							label: {
-								component: 'span',
-								text: 'language'
-							}
-						},
-						encrypted: {
-							component: 'switch',
-							storage: false,
-							on: {
-								change: function () {
-									crypt(this.dataset.value === 'true', JSON.stringify(lists), function (mode, data) {
-										if (mode) {
-			                                satus.storage.set('encrypted', true);
-			                            } else {
-			        						satus.storage.set('encrypted', false);
-			                            }
-
-			                            satus.storage.set('lists', data);
-									});
-								}
-							},
-
-							svg: {
-								component: 'svg',
-								attr: {
-									'viewBox': '0 0 24 24',
-									'fill': 'none',
-									'stroke': 'currentColor',
-									'stroke-linecap': 'round',
-									'stroke-linejoin': 'round',
-									'stroke-width': '2'
-								},
-
-								path: {
-									component: 'path',
-									attr: {
-										'd': 'M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4'
-									}
-								}
-							},
-							label: {
-								component: 'span',
-								text: 'encryption'
-							}
-						},
-						export: {
-							component: 'button',
-                            on: {
-                                click: function () {
-                                    if (location.href.indexOf('/options.html?action=export') !== -1) {
-                                        exportData();
-                                    } else {
-                                        chrome.tabs.create({
-                                            url: 'ui/options.html?action=export'
-                                        });
-                                    }
-                                }
-                            },
-
-							svg: {
-								component: 'svg',
-								attr: {
-									'viewBox': '0 0 24 24',
-									'fill': 'none',
-									'stroke': 'currentColor',
-									'stroke-linecap': 'round',
-									'stroke-linejoin': 'round',
-									'stroke-width': '2'
-								},
-
-								path: {
-									component: 'path',
-									attr: {
-										'd': 'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12'
-									}
-								}
-							},
-							label: {
-								component: 'span',
-								text: 'export'
-							}
-						},
-						import: {
-							component: 'button',
-                            on: {
-                                click: function () {
-                                    if (location.href.indexOf('/options.html?action=import') !== -1) {
-                                        importData();
-                                    } else {
-                                        chrome.tabs.create({
-                                            url: 'ui/options.html?action=import'
-                                        });
-                                    }
-                                }
-                            },
-
-							svg: {
-								component: 'svg',
-								attr: {
-									'viewBox': '0 0 24 24',
-									'fill': 'none',
-									'stroke': 'currentColor',
-									'stroke-linecap': 'round',
-									'stroke-linejoin': 'round',
-									'stroke-width': '2'
-								},
-
-								path: {
-									component: 'path',
-									attr: {
-										'd': 'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3'
-									}
-								}
-							},
-							label: {
-								component: 'span',
-								text: 'import'
-							}
-						}
-                    }
-                },
-
-                svg: {
-                    component: 'svg',
-                    attr: {
-                        'viewBox': '0 0 24 24',
-                        'fill': 'currentColor'
-                    },
-
-                    circle_1: {
-                        component: 'circle',
-                        attr: {
-                            'cx': '12',
-                            'cy': '5.25',
-                            'r': '1'
-                        }
-                    },
-                    circle_2: {
-                        component: 'circle',
-                        attr: {
-                            'cx': '12',
-                            'cy': '12',
-                            'r': '1'
-                        }
-                    },
-                    circle_3: {
-                        component: 'circle',
-                        attr: {
-                            'cx': '12',
-                            'cy': '18.75',
-                            'r': '1'
-                        }
-                    }
-                }
-            }
-		}
-	},
-	layers: {
-		component: 'layers',
-		on: {
-			open: function () {
-				var skeleton = this.path[this.path.length - 1],
-					parent = skeleton.parent,
-					section = this.base.skeleton.header.section_1,
-					is_home = this.path.length <= 1,
-					title = 'ToDo';
-
-				if (parent) {
-					if (parent.label) {
-						title = parent.label.text;
-					} else if (parent.text) {
-						title = parent.text;
-					}
-				}
-
-				section.back.rendered.hidden = is_home;
-				section.title.rendered.innerText = satus.locale.get(title);
-
-				if (this.path.length === 1) {
-					updateLists();
-				}
-			}
-		}
-	},
-	create: {
-		component: 'button',
-		variant: 'create',
-		attr: {
-			'title': 'create'
-		},
-		on: {
-			click: {
-				component: 'modal',
-
+				},
 				title: {
 					component: 'span',
-					text: function () {
-						if (skeleton.layers.rendered.path.length > 1) {
-							return 'newTask';
-						} else {
-							return 'newList';
+					variant: 'title'
+				}
+			},
+			section_2: {
+				component: 'section',
+				variant: 'align-end',
+
+				menu: {
+	                component: 'button',
+	                on: {
+	                    click: {
+	                        component: 'modal',
+	                        variant: 'vertical',
+
+	                        label: {
+	                        	component: 'span',
+	                        	text: 'theme'
+	                        },
+	                        theme: {
+	                        	component: 'tabs',
+	                        	items: [
+	                        		'light',
+	                        		'dark',
+	                        		'black'
+	                        	]
+	                        },
+	                        divider: {
+	                        	component: 'divider'
+	                        },
+	                        language: {
+								component: 'select',
+								on: {
+									change: function (name, value) {
+										var self = this;
+
+										satus.ajax('_locales/' + this.querySelector('select').value + '/messages.json', function (response) {
+											response = JSON.parse(response);
+
+											for (var key in response) {
+												satus.locale.strings[key] = response[key].message;
+											}
+
+											self.base.skeleton.header.section_1.title.rendered.textContent = satus.locale.get('languages');
+
+											self.base.skeleton.layers.rendered.update();
+										});
+									}
+								},
+								options: [{
+									value: 'en',
+									text: 'English'
+								}, {
+									value: 'ru',
+									text: 'Русский'
+								}, {
+									value: 'de',
+									text: 'Deutsch'
+								}],
+
+								svg: {
+									component: 'svg',
+									attr: {
+										'viewBox': '0 0 24 24',
+										'fill': 'currentColor'
+									},
+
+									path: {
+										component: 'path',
+										attr: {
+											'd': 'M12.9 15l-2.6-2.4c1.8-2 3-4.2 3.8-6.6H17V4h-7V2H8v2H1v2h11.2c-.7 2-1.8 3.8-3.2 5.3-1-1-1.7-2.1-2.3-3.3h-2c.7 1.6 1.7 3.2 3 4.6l-5.1 5L4 19l5-5 3.1 3.1.8-2zm5.6-5h-2L12 22h2l1.1-3H20l1.1 3h2l-4.5-12zm-2.6 7l1.6-4.3 1.6 4.3H16z'
+										}
+									}
+								},
+								label: {
+									component: 'span',
+									text: 'language'
+								}
+							},
+							encrypted: {
+								component: 'switch',
+								storage: false,
+								on: {
+									render: function () {
+										if (satus.storage.get('encrypted') === true) {
+											this.dataset.value = 'true';
+										} else {
+											this.dataset.value = 'false';
+										}
+									},
+									change: function () {
+										var component = this;
+
+										crypt(this.dataset.value === 'true', JSON.stringify(lists), function (mode, data) {
+											if (mode) {
+				                                satus.storage.set('encrypted', true);
+
+				                                component.dataset.value = 'true';
+				                            } else {
+				        						satus.storage.remove('encrypted');
+
+				                                component.dataset.value = 'false';
+				                            }
+
+				                            satus.storage.set('lists', data);
+										}, component);
+									}
+								},
+
+								svg: {
+									component: 'svg',
+									attr: {
+										'viewBox': '0 0 24 24',
+										'fill': 'none',
+										'stroke': 'currentColor',
+										'stroke-linecap': 'round',
+										'stroke-linejoin': 'round',
+										'stroke-width': '2'
+									},
+
+									path: {
+										component: 'path',
+										attr: {
+											'd': 'M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4'
+										}
+									}
+								},
+								label: {
+									component: 'span',
+									text: 'encryption'
+								}
+							},
+							export: {
+								component: 'button',
+	                            on: {
+	                                click: function () {
+	                                    if (location.href.indexOf('/options.html?action=export') !== -1) {
+	                                        exportData();
+	                                    } else {
+	                                        chrome.tabs.create({
+	                                            url: 'ui/options.html?action=export'
+	                                        });
+	                                    }
+	                                }
+	                            },
+
+								svg: {
+									component: 'svg',
+									attr: {
+										'viewBox': '0 0 24 24',
+										'fill': 'none',
+										'stroke': 'currentColor',
+										'stroke-linecap': 'round',
+										'stroke-linejoin': 'round',
+										'stroke-width': '2'
+									},
+
+									path: {
+										component: 'path',
+										attr: {
+											'd': 'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12'
+										}
+									}
+								},
+								label: {
+									component: 'span',
+									text: 'export'
+								}
+							},
+							import: {
+								component: 'button',
+	                            on: {
+	                                click: function () {
+	                                    if (location.href.indexOf('/options.html?action=import') !== -1) {
+	                                        importData();
+	                                    } else {
+	                                        chrome.tabs.create({
+	                                            url: 'ui/options.html?action=import'
+	                                        });
+	                                    }
+	                                }
+	                            },
+
+								svg: {
+									component: 'svg',
+									attr: {
+										'viewBox': '0 0 24 24',
+										'fill': 'none',
+										'stroke': 'currentColor',
+										'stroke-linecap': 'round',
+										'stroke-linejoin': 'round',
+										'stroke-width': '2'
+									},
+
+									path: {
+										component: 'path',
+										attr: {
+											'd': 'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3'
+										}
+									}
+								},
+								label: {
+									component: 'span',
+									text: 'import'
+								}
+							}
+	                    }
+	                },
+
+	                svg: {
+	                    component: 'svg',
+	                    attr: {
+	                        'viewBox': '0 0 24 24',
+	                        'fill': 'currentColor'
+	                    },
+
+	                    circle_1: {
+	                        component: 'circle',
+	                        attr: {
+	                            'cx': '12',
+	                            'cy': '5.25',
+	                            'r': '1'
+	                        }
+	                    },
+	                    circle_2: {
+	                        component: 'circle',
+	                        attr: {
+	                            'cx': '12',
+	                            'cy': '12',
+	                            'r': '1'
+	                        }
+	                    },
+	                    circle_3: {
+	                        component: 'circle',
+	                        attr: {
+	                            'cx': '12',
+	                            'cy': '18.75',
+	                            'r': '1'
+	                        }
+	                    }
+	                }
+	            }
+			}
+		},
+		layers: {
+			component: 'layers',
+			on: {
+				open: function () {
+					var skeleton = this.path[this.path.length - 1],
+						parent = skeleton.parent,
+						section = this.base.skeleton.header.section_1,
+						is_home = this.path.length <= 1,
+						title = 'ToDo';
+
+					if (parent) {
+						if (parent.label) {
+							title = parent.label.text;
+						} else if (parent.text) {
+							title = parent.text;
 						}
 					}
-				},
-				input: {
-					component: 'input',
-					type: 'text',
-					autofocus: true,
-					storage: false,
-					on: {
-						render: function () {
-							this.focus();
-						},
-						keydown: function (event) {
-							if (event.key === 'Enter') {
-								this.parentNode.parentNode.skeleton.actions.create.rendered.click();
+
+					section.back.rendered.hidden = is_home;
+					section.title.rendered.innerText = satus.locale.get(title);
+
+					if (this.path.length === 1) {
+						updateLists();
+					}
+				}
+			}
+		},
+		create: {
+			component: 'button',
+			variant: 'create',
+			attr: {
+				'title': 'create'
+			},
+			on: {
+				click: {
+					component: 'modal',
+
+					title: {
+						component: 'span',
+						text: function () {
+							if (skeleton.layers.rendered.path.length > 1) {
+								return 'newTask';
+							} else {
+								return 'newList';
 							}
 						}
-					}
-				},
-				actions: {
-					component: 'section',
-					variant: 'actions',
-
-					create: {
-						component: 'button',
-						text: 'create',
+					},
+					input: {
+						component: 'input',
+						type: 'text',
+						autofocus: true,
+						storage: false,
 						on: {
-							click: function () {
-								var path = skeleton.layers.rendered.path,
-									modal = this.skeleton.parent.parent,
-									name = modal.input.rendered.value;
-
-								if (path.length > 1) {
-									var layer = path[path.length - 1],
-										task = {
-											name: name,
-											value: false,
-											time: new Date().getTime()
-										};
-
-									layer.tasks.push(task);
-
-									satus.empty(layer.rendered);
-
-									updateTasks(layer.tasks);
-								} else {
-									lists.push({
-										name: name,
-										tasks: []
-									});
-
-									updateLists();
+							render: function () {
+								this.focus();
+							},
+							keydown: function (event) {
+								if (event.key === 'Enter') {
+									this.parentNode.parentNode.skeleton.actions.create.rendered.click();
 								}
+							}
+						}
+					},
+					actions: {
+						component: 'section',
+						variant: 'actions',
 
-								satus.storage.set('lists', lists);
+						create: {
+							component: 'button',
+							text: 'create',
+							on: {
+								click: function () {
+									var path = skeleton.layers.rendered.path,
+										modal = this.skeleton.parent.parent,
+										name = modal.input.rendered.value;
 
-								modal.rendered.close();
+									if (path.length > 1) {
+										var layer = path[path.length - 1],
+											task = {
+												name: name,
+												value: false,
+												time: new Date().getTime()
+											};
+
+										layer.tasks.push(task);
+
+										satus.empty(layer.rendered);
+
+										updateTasks(layer.tasks);
+									} else {
+										lists.push({
+											name: name,
+											tasks: []
+										});
+
+										updateLists();
+									}
+
+									updateData();
+
+									modal.rendered.close();
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-	}
-};
+	};
 
 function updateLists() {
 	var layer = skeleton.layers.rendered.children[0],
@@ -479,7 +492,7 @@ function updateLists() {
 
 												item.list.name = modal.skeleton.input.rendered.value;
 
-												satus.storage.set('lists', lists);
+												updateData();
 
 												updateLists();
 
@@ -504,7 +517,7 @@ function updateLists() {
 
 							satus.remove(parent.list, lists);
 
-							satus.storage.set('lists', lists);
+							updateData();
 
 							updateLists();
 
@@ -529,7 +542,7 @@ function updateLists() {
 
 					satus.toIndex(index, this.skeleton.list, lists);
 
-					satus.storage.set('lists', lists);
+					updateData();
 				}
 			},
 
@@ -647,7 +660,7 @@ function updateTasks(tasks) {
 
 												item.task.name = modal.skeleton.input.rendered.value;
 
-												satus.storage.set('lists', lists);
+												updateData();
 
 												updateTasks(item.tasks);
 
@@ -674,7 +687,7 @@ function updateTasks(tasks) {
 
 							satus.remove(parent.task, parent.tasks);
 
-							satus.storage.set('lists', lists);
+							updateData();
 
 							updateTasks(parent.tasks);
 
@@ -688,24 +701,45 @@ function updateTasks(tasks) {
 				change: function () {
 					this.skeleton.task.value = this.storageValue;
 
-					satus.storage.set('lists', lists);
+					updateData();
 				},
 				sort: function () {
 					var index = satus.indexOf(this);
 
 					satus.toIndex(index, this.skeleton.task, this.skeleton.tasks);
 
-					satus.storage.set('lists', lists);
+					updateData();
 				}
 			}
 		}, section);
 	}
 }
 
-function crypt(mode, data, callback) {
+function updateData() {
+	if (satus.storage.get('encrypted') === true && password) {
+		encr();
+	} else {
+		satus.storage.set('lists', lists);
+	}
+}
+
+function crypt(mode, data, callback, component) {
 	satus.render({
         component: 'modal',
-        parent: this.skeleton,
+        parent: component ? component.skeleton : undefined,
+        on: {
+        	close: function () {
+        		if (this.skeleton.parent) {
+        			var component = this.skeleton.parent.parent.encrypted.rendered;
+
+        			if (satus.storage.get('encrypted') === true) {
+						component.dataset.value = 'true';
+					} else {
+						component.dataset.value = 'false';
+					}
+        		}
+        	}
+        },
         
         title: {
             component: 'span',
@@ -886,19 +920,17 @@ function importData() {
 }
 
 async function encr(callback) {
-	data = await satus.encrypt(JSON.stringify(lists), password);
-	
-	satus.storage.set('lists', data);
+	satus.storage.set('lists', await satus.encrypt(JSON.stringify(lists), password));
     satus.storage.set('encrypted', true);
-	satus.storage.set('data', null);
+	satus.storage.remove('data');
 
-	callback();
+	if (callback) {
+		callback();
+	}
 }
 
 function migrateData(callback) {
-	var data = satus.storage.get('data');
-
-	function change(data, callback) {
+	function change(data) {
 		lists = [];
 
 		try {
@@ -924,22 +956,26 @@ function migrateData(callback) {
 					});
 				}
 			}
-
-			encr(callback);
 		} catch (error) {
 			console.log(error);
-
-			callback();
 		}
 	}
 
-	if (data) {
+	if (satus.storage.get('data')) {
 		if (satus.storage.get('encrypted')) {
-			crypt(false, data, function (mode, data) {
-				change(data, callback);
+			crypt(false, satus.storage.get('data'), function (mode, data) {
+				change(data);
+
+				encr(callback);
 			});
 		} else {
-			change(data, callback);
+			change(data);
+
+			satus.storage.set('lists', lists);
+		    satus.storage.remove('encrypted');
+			satus.storage.remove('data');
+
+			callback();
 		}
 	} else {
 		callback();
@@ -964,7 +1000,7 @@ satus.storage.import(function (items) {
 				lists = satus.storage.get('lists');
 
 				satus.render(skeleton);
-			} else if (satus.storage.get('encrypted') === true) {
+			} else if (satus.storage.get('encrypted') === true && typeof satus.storage.get('lists') === 'string') {
 				crypt(false, satus.storage.get('lists'), function (mode, data) {
 					lists = data;
 
