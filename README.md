@@ -9,7 +9,9 @@
 <p align="center">
     Make checklists and more.
     <br>
-    <a href="https://chrome.google.com/webstore/detail/to-do/mniboiicchcpkffcdlaocnkfpbdihgii">Get Started »</a>
+    <br>
+    <a href="https://chrome.google.com/webstore/detail/to-do/mniboiicchcpkffcdlaocnkfpbdihgii">Chrome</a>  ·
+    <a href="https://addons.mozilla.org/firefox/addon/todo-firefox/">Firefox</a>
 </p>
 
 ## :earth_americas: Translations
