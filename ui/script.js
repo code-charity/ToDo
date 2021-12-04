@@ -969,7 +969,7 @@ function migrateData(callback) {
 				encr(callback);
 			});
 		} else {
-			change(data);
+			change(satus.storage.get('data'));
 
 			satus.storage.set('lists', lists);
 		    satus.storage.remove('encrypted');
