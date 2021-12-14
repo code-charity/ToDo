@@ -26,7 +26,7 @@
     "decryption": {
         "message": "Дешифрование"
     },
-    "description_ext": {
+    "description": {
         "message": "With the To-Do extension you get a simple popup to capture your ideas, goals and daily tasks."
     },
     "encryption": {

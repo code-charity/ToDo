@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------
->>> SCRIPT
+>>> USER INTERFACE
 ----------------------------------------------------------------
 # Skeleton
 # Initialization
@@ -57,34 +57,33 @@ var password,
 				variant: 'align-end',
 
 				menu: {
-	                component: 'button',
-	                on: {
-	                    click: {
-	                        component: 'modal',
-	                        variant: 'vertical',
+					component: 'button',
+					on: {
+						click: {
+							component: 'modal',
+							variant: 'vertical',
 
-	                        label: {
-	                        	component: 'span',
-	                        	text: 'theme'
-	                        },
-	                        theme: {
-	                        	component: 'tabs',
-	                        	items: [
-	                        		'light',
-	                        		'dark',
-	                        		'black'
-	                        	]
-	                        },
-	                        divider: {
-	                        	component: 'divider'
-	                        },
-	                        language: {
+							label: {
+								component: 'span',
+								text: 'theme'
+							},
+							theme: {
+								component: 'tabs',
+								items: [
+									'light',
+									'dark'
+								]
+							},
+							divider: {
+								component: 'divider'
+							},
+							language: {
 								component: 'select',
 								on: {
 									change: function (name, value) {
 										var self = this;
 
-										satus.ajax('_locales/' + this.querySelector('select').value + '/messages.json', function (response) {
+										satus.fetch(chrome.runtime.getURL('_locales/' + this.querySelector('select').value + '/messages.json'), function (response) {
 											response = JSON.parse(response);
 
 											for (var key in response) {
@@ -143,16 +142,16 @@ var password,
 
 										crypt(this.dataset.value === 'true', JSON.stringify(lists), function (mode, data) {
 											if (mode) {
-				                                satus.storage.set('encrypted', true);
+												satus.storage.set('encrypted', true);
 
-				                                component.dataset.value = 'true';
-				                            } else {
-				        						satus.storage.remove('encrypted');
+												component.dataset.value = 'true';
+											} else {
+												satus.storage.remove('encrypted');
 
-				                                component.dataset.value = 'false';
-				                            }
+												component.dataset.value = 'false';
+											}
 
-				                            satus.storage.set('lists', data);
+											satus.storage.set('lists', data);
 										}, component);
 									}
 								},
@@ -182,17 +181,17 @@ var password,
 							},
 							export: {
 								component: 'button',
-	                            on: {
-	                                click: function () {
-	                                    if (location.href.indexOf('/options.html?action=export') !== -1) {
-	                                        exportData();
-	                                    } else {
-	                                        chrome.tabs.create({
-	                                            url: 'ui/options.html?action=export'
-	                                        });
-	                                    }
-	                                }
-	                            },
+								on: {
+									click: function () {
+										if (location.href.indexOf('/options.html?action=export') !== -1) {
+											exportData();
+										} else {
+											chrome.tabs.create({
+												url: chrome.runtime.getURL('ui/options.html?action=export')
+											});
+										}
+									}
+								},
 
 								svg: {
 									component: 'svg',
@@ -219,17 +218,17 @@ var password,
 							},
 							import: {
 								component: 'button',
-	                            on: {
-	                                click: function () {
-	                                    if (location.href.indexOf('/options.html?action=import') !== -1) {
-	                                        importData();
-	                                    } else {
-	                                        chrome.tabs.create({
-	                                            url: 'ui/options.html?action=import'
-	                                        });
-	                                    }
-	                                }
-	                            },
+								on: {
+									click: function () {
+										if (location.href.indexOf('/options.html?action=import') !== -1) {
+											importData();
+										} else {
+											chrome.tabs.create({
+												url: chrome.runtime.getURL('ui/options.html?action=import')
+											});
+										}
+									}
+								},
 
 								svg: {
 									component: 'svg',
@@ -254,42 +253,42 @@ var password,
 									text: 'import'
 								}
 							}
-	                    }
-	                },
+						}
+					},
 
-	                svg: {
-	                    component: 'svg',
-	                    attr: {
-	                        'viewBox': '0 0 24 24',
-	                        'fill': 'currentColor'
-	                    },
+					svg: {
+						component: 'svg',
+						attr: {
+							'viewBox': '0 0 24 24',
+							'fill': 'currentColor'
+						},
 
-	                    circle_1: {
-	                        component: 'circle',
-	                        attr: {
-	                            'cx': '12',
-	                            'cy': '5.25',
-	                            'r': '1'
-	                        }
-	                    },
-	                    circle_2: {
-	                        component: 'circle',
-	                        attr: {
-	                            'cx': '12',
-	                            'cy': '12',
-	                            'r': '1'
-	                        }
-	                    },
-	                    circle_3: {
-	                        component: 'circle',
-	                        attr: {
-	                            'cx': '12',
-	                            'cy': '18.75',
-	                            'r': '1'
-	                        }
-	                    }
-	                }
-	            }
+						circle_1: {
+							component: 'circle',
+							attr: {
+								'cx': '12',
+								'cy': '5.25',
+								'r': '1'
+							}
+						},
+						circle_2: {
+							component: 'circle',
+							attr: {
+								'cx': '12',
+								'cy': '12',
+								'r': '1'
+							}
+						},
+						circle_3: {
+							component: 'circle',
+							attr: {
+								'cx': '12',
+								'cy': '18.75',
+								'r': '1'
+							}
+						}
+					}
+				}
 			}
 		},
 		layers: {
@@ -725,123 +724,123 @@ function updateData() {
 
 function crypt(mode, data, callback, component) {
 	satus.render({
-        component: 'modal',
-        parent: component ? component.skeleton : undefined,
-        on: {
-        	close: function () {
-        		if (this.skeleton.parent) {
-        			var component = this.skeleton.parent.parent.encrypted.rendered;
+		component: 'modal',
+		parent: component ? component.skeleton : undefined,
+		on: {
+			close: function () {
+				if (this.skeleton.parent) {
+					var component = this.skeleton.parent.parent.encrypted.rendered;
 
-        			if (satus.storage.get('encrypted') === true) {
+					if (satus.storage.get('encrypted') === true) {
 						component.dataset.value = 'true';
 					} else {
 						component.dataset.value = 'false';
 					}
-        		}
-        	}
-        },
-        
-        title: {
-            component: 'span',
-            text: mode ? 'encryption' : 'decryption'
-        },
-        input: {
-            component: 'input',
-            type: 'password',
-            on: {
-            	render: function() {
-                    this.focus();
-                },
-                keydown: async function(event) {
-                    if (event.key === 'Enter') {
+				}
+			}
+		},
+
+		title: {
+			component: 'span',
+			text: mode ? 'encryption' : 'decryption'
+		},
+		input: {
+			component: 'input',
+			type: 'password',
+			on: {
+				render: function () {
+					this.focus();
+				},
+				keydown: async function (event) {
+					if (event.key === 'Enter') {
 						this.parentNode.parentNode.skeleton.actions.ok.rendered.click();
 					}
-                }
-            }
-        },
-        actions: {
-            component: 'section',
-            variant: 'actions',
-            
-            ok: {
-                component: 'button',
-                text: 'ok',
-                on: {
-                	click: async function() {
-                		var modal = this.skeleton.parent.parent,
+				}
+			}
+		},
+		actions: {
+			component: 'section',
+			variant: 'actions',
+
+			ok: {
+				component: 'button',
+				text: 'ok',
+				on: {
+					click: async function () {
+						var modal = this.skeleton.parent.parent,
 							input = modal.input.rendered;
 
-                        if (input.value.length > 1) {
-                            if (mode) {
-                            	data = await satus.encrypt(data, input.value);
-                                password = input.value;
-                            } else {
-                            	data = JSON.parse(await satus.decrypt(data, input.value));
-                                password = input.value;
-                            }
+						if (input.value.length > 1) {
+							if (mode) {
+								data = await satus.encrypt(data, input.value);
+								password = input.value;
+							} else {
+								data = JSON.parse(await satus.decrypt(data, input.value));
+								password = input.value;
+							}
 
-                            if (callback) {
-                            	callback(mode, data);
-                            }
-                            
-                            modal.rendered.close();
-                        } else {
-                            input.classList.add('error');
-                        }
-                    }
-                }
-            }
-        }
-    });
+							if (callback) {
+								callback(mode, data);
+							}
+
+							modal.rendered.close();
+						} else {
+							input.classList.add('error');
+						}
+					}
+				}
+			}
+		}
+	});
 }
 
 function exportData() {
 	if (location.href.indexOf('action=export') !== -1) {
-        var blob;
+		var blob;
 
-        try {
-        	blob = new Blob([JSON.stringify(satus.storage.data)], {
-		        type: 'application/json;charset=utf-8'
-		    });
-        } catch (error) {
-        	return modalError(error);
-        }
+		try {
+			blob = new Blob([JSON.stringify(satus.storage.data)], {
+				type: 'application/json;charset=utf-8'
+			});
+		} catch (error) {
+			return modalError(error);
+		}
 
-	    satus.render({
-	    	component: 'modal',
+		satus.render({
+			component: 'modal',
 
-	    	label: {
-	    		component: 'span',
-	    		text: 'areYouSureYouWantToExportTheData'
-	    	},
-	    	actions: {
-	    		component: 'section',
-	    		variant: 'actions',
+			label: {
+				component: 'span',
+				text: 'areYouSureYouWantToExportTheData'
+			},
+			actions: {
+				component: 'section',
+				variant: 'actions',
 
-	    		ok: {
+				ok: {
 					component: 'button',
 					text: 'ok',
 					on: {
 						click: function () {
 							try {
 								chrome.permissions.request({
-				                    permissions: ['downloads']
-				                }, function (granted) {
-				                    if (granted) {
-				                        chrome.downloads.download({
-				                            url: URL.createObjectURL(blob),
-				                            filename: 'todo.json',
-				                            saveAs: true
-				                        }, function () {
-				                            setTimeout(function () {
-				                            	close();
-				                            }, 1000);
-				                        });
-				                    }
-				                });
-				            } catch (error) {
-			                	return modalError(error);
-			                }
+									permissions: ['downloads']
+								}, function (granted) {
+									if (granted) {
+										chrome.downloads.download({
+											url: URL.createObjectURL(blob),
+											filename: 'todo.json',
+											saveAs: true
+										}, function () {
+											setTimeout(function () {
+												close();
+											}, 1000);
+										});
+									}
+								});
+							} catch (error) {
+								return modalError(error);
+							}
 
 							this.parentNode.parentNode.parentNode.close();
 						}
@@ -856,50 +855,50 @@ function exportData() {
 						}
 					}
 				}
-	    	}
-	    });
-    }
+			}
+		});
+	}
 }
 
 function importData() {
 	if (location.href.indexOf('action=import') !== -1) {
-        satus.render({
-	    	component: 'modal',
+		satus.render({
+			component: 'modal',
 
-	    	label: {
-	    		component: 'span',
-	    		text: 'areYouSureYouWantToImportTheData'
-	    	},
-	    	actions: {
-	    		component: 'section',
-	    		variant: 'actions',
+			label: {
+				component: 'span',
+				text: 'areYouSureYouWantToImportTheData'
+			},
+			actions: {
+				component: 'section',
+				variant: 'actions',
 
-	    		ok: {
+				ok: {
 					component: 'button',
 					text: 'ok',
 					on: {
 						click: function () {
 							var input = document.createElement('input');
 
-			                input.type = 'file';
+							input.type = 'file';
 
-			                input.addEventListener('change', function () {
-			                    var file_reader = new FileReader();
+							input.addEventListener('change', function () {
+								var file_reader = new FileReader();
 
-			                    file_reader.onload = function () {
-			                        var data = JSON.parse(this.result);
+								file_reader.onload = function () {
+									var data = JSON.parse(this.result);
 
-			                        for (var key in data) {
-			                            satus.storage.set(key, data[key]);
-			                        }
+									for (var key in data) {
+										satus.storage.set(key, data[key]);
+									}
 
-			                        close();
-			                    };
+									close();
+								};
 
-			                    file_reader.readAsText(this.files[0]);
-			                });
+								file_reader.readAsText(this.files[0]);
+							});
 
-			                input.click();
+							input.click();
 
 							this.parentNode.parentNode.parentNode.close();
 						}
@@ -914,14 +913,14 @@ function importData() {
 						}
 					}
 				}
-	    	}
-	    });
-    }
+			}
+		});
+	}
 }
 
 async function encr(callback) {
 	satus.storage.set('lists', await satus.encrypt(JSON.stringify(lists), password));
-    satus.storage.set('encrypted', true);
+	satus.storage.set('encrypted', true);
 	satus.storage.remove('data');
 
 	if (callback) {
@@ -972,7 +971,7 @@ function migrateData(callback) {
 			change(satus.storage.get('data'));
 
 			satus.storage.set('lists', lists);
-		    satus.storage.remove('encrypted');
+			satus.storage.remove('encrypted');
 			satus.storage.remove('data');
 
 			callback();
@@ -988,12 +987,12 @@ function migrateData(callback) {
 --------------------------------------------------------------*/
 
 satus.storage.attributes = {
-    theme: true
+	theme: true
 };
 
 satus.storage.import(function (items) {
 	satus.locale.import(items.language, '../_locales/', function () {
-		migrateData(function() {
+		migrateData(function () {
 			if (lists.length > 0) {
 				satus.render(skeleton);
 			} else if (Array.isArray(satus.storage.get('lists'))) {
