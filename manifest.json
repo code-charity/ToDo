@@ -17,6 +17,7 @@
     "optional_permissions": [
         "downloads"
     ],
+    "offline_enabled": true,
     "permissions": [
         "storage"
     ]
