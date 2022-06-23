@@ -11,6 +11,15 @@
     "cancel": {
         "message": "Отмена"
     },
+    "changeColor": {
+        "message": "Change color"
+    },
+    "changeIcon": {
+        "message": "Change icon"
+    },
+    "color": {
+        "message": "Color"
+    },
     "create": {
         "message": "Создать"
     },
@@ -34,6 +43,9 @@
     },
     "export": {
         "message": "Экспорт"
+    },
+    "icons": {
+        "message": "Icons"
     },
     "import": {
         "message": "Импорт"

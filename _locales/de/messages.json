@@ -11,6 +11,15 @@
     "cancel": {
         "message": "Cancel"
     },
+    "changeColor": {
+        "message": "Change color"
+    },
+    "changeIcon": {
+        "message": "Change icon"
+    },
+    "color": {
+        "message": "Color"
+    },
     "create": {
         "message": "Erstellen"
     },
@@ -34,6 +43,9 @@
     },
     "export": {
         "message": "Exportieren"
+    },
+    "icons": {
+        "message": "Icons"
     },
     "import": {
         "message": "Importieren"
