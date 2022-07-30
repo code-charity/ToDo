@@ -12,7 +12,12 @@
 --------------------------------------------------------------*/
 
 extension.skeleton = {
-	component: 'base'
+	component: 'base',
+	attr: {
+		theme: function () {
+			return satus.storage.get('theme') || 'light';
+		}
+	}
 };
 
 
@@ -86,14 +91,16 @@ extension.skeleton.header = {
 						},
 						on: {
 							click: function () {
+								var base = extension.skeleton.rendered;
+
 								if (this.value === 1) {
 									satus.storage.set('theme', 'dark');
 
-									document.body.setAttribute('theme', 'dark');
+									base.setAttribute('theme', 'dark');
 								} else {
 									satus.storage.remove('theme');
 
-									document.body.removeAttribute('theme');
+									base.removeAttribute('theme');
 								}
 							}
 						}
@@ -218,8 +225,14 @@ extension.skeleton.header = {
 						text: 'export',
 						on: {
 							click: function () {
-								if (location.href.indexOf('options-page/index.html?action=export-settings') !== -1) {
-									extension.exportSettings();
+								if (document.body.hasAttribute('tab')) {
+									extension.exportSettings(true, function () {
+										var vertical_menu = document.querySelector('.satus-modal--vertical-menu');
+
+										if (vertical_menu) {
+											vertical_menu.close();
+										}
+									});
 								} else {
 									chrome.tabs.create({
 										url: 'options-page/index.html?action=export-settings'
@@ -251,8 +264,10 @@ extension.skeleton.header = {
 						text: 'import',
 						on: {
 							click: function () {
-								if (location.href.indexOf('options-page/index.html?action=import-settings') !== -1) {
-									extension.importSettings();
+								if (document.body.hasAttribute('tab')) {
+									extension.importSettings(true, function () {
+										location.reload();
+									});
 								} else {
 									chrome.tabs.create({
 										url: 'options-page/index.html?action=import-settings'

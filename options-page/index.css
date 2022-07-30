@@ -39,11 +39,10 @@
 # THEMES
 --------------------------------------------------------------*/
 
-body {
-	--satus-light: 0, 0, 0;
+.satus-base {
+	--satus-light: 80, 80, 80;
 	--satus-primary: #f6b465;
 	--satus-header-background: #fff;
-	--satus-header-shadow: 0 0 3px rgba(var(--satus-light), .1), inset 0 -1px 0 rgba(var(--satus-light), .1);
 	--satus-header-foreground: #848471;
 	--satus-base-background: #f6f6f4;
 	--satus-base-foreground: #848471;
@@ -56,9 +55,9 @@ body {
 	--satus-tabs-foreground: #fff;
 }
 
-body[theme='dark'] {
+.satus-base[theme='dark'] {
 	--satus-light: 255, 255, 255;
-	--satus-primary: #8f8f8f;
+	--satus-primary: #f6b465;
 	--satus-base-background: #000;
 	--satus-base-foreground: #ccc;
 	--satus-switch-background: rgba(var(--satus-light), .08);

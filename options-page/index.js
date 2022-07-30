@@ -18,10 +18,6 @@ var extension = {
 # INITIALIZATION
 --------------------------------------------------------------*/
 
-satus.storage.attributes = {
-	theme: true
-};
-
 satus.storage.import(function (items) {
 	var language = items.language;
 
@@ -29,28 +25,25 @@ satus.storage.import(function (items) {
 		language = window.navigator.language;
 	}
 
-	if (items.theme === 'dark') {
-		document.body.setAttribute('theme', 'dark');
-	}
-
 	satus.locale.import(language, function () {
-		if (extension.lists.length > 0) {
-			satus.render(extension.skeleton);
-		} else if (Array.isArray(satus.storage.get('lists'))) {
-			extension.lists = satus.storage.get('lists');
+		satus.render(extension.skeleton, undefined, undefined, undefined, undefined, true);
 
-			satus.render(extension.skeleton);
-		} else if (satus.storage.get('encrypted') === true && typeof satus.storage.get('lists') === 'string') {
-			extension.crypt(false, satus.storage.get('lists'), function (mode, data) {
-				extension.lists = data;
+		if (!extension.exportSettings()) {
+			if (Array.isArray(satus.storage.get('lists'))) {
+				extension.lists = satus.storage.get('lists');
 
-				satus.render(extension.skeleton);
-			});
-		} else {
-			satus.render(extension.skeleton);
+				satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);
+			} else if (satus.storage.get('encrypted') === true && satus.isString(satus.storage.get('lists'))) {
+				extension.crypt(false, satus.storage.get('lists'), function (mode, data) {
+					extension.lists = data;
+
+					satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);
+				});
+			} else {
+				satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);
+			}
 		}
 
-		extension.exportSettings();
 		extension.importSettings();
 	}, '_locales/');
 });

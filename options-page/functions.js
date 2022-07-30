@@ -13,8 +13,24 @@
 # EXPORT SETTINGS
 --------------------------------------------------------------*/
 
-extension.exportSettings = function () {
-	if (location.href.indexOf('action=export-settings') !== -1) {
+extension.exportSettings = function (file_only, callback) {
+	if (file_only) {
+		var blob = new Blob([JSON.stringify(satus.storage.data)], {
+				type: 'application/json;charset=utf-8'
+			});
+
+		chrome.permissions.request({
+			permissions: ['downloads']
+		}, function (granted) {
+			if (granted) {
+				chrome.downloads.download({
+					url: URL.createObjectURL(blob),
+					filename: 'todo.json',
+					saveAs: true
+				}, callback);
+			}
+		});
+	} else if (location.href.indexOf('action=export-settings') !== -1) {
 		satus.render({
 			component: 'modal',
 			variant: 'confirm',
@@ -34,34 +50,18 @@ extension.exportSettings = function () {
 					text: 'ok',
 					on: {
 						click: function () {
-							try {
-								var blob = new Blob([JSON.stringify(satus.storage.data)], {
-									type: 'application/json;charset=utf-8'
-								});
-
-								chrome.permissions.request({
-									permissions: ['downloads']
-								}, function (granted) {
-									if (granted) {
-										chrome.downloads.download({
-											url: URL.createObjectURL(blob),
-											filename: 'user-agent.json',
-											saveAs: true
-										}, function () {
-											setTimeout(function () {
-												close();
-											}, 1000);
-										});
-									}
-								});
-							} catch (error) {
-								console.error(error);
-							}
+							extension.exportSettings(true, function () {
+								setTimeout(function () {
+									close();
+								}, 1000);
+							});
 						}
 					}
 				}
 			}
 		}, extension.skeleton.rendered);
+
+		return true;
 	}
 };
 
@@ -70,8 +70,36 @@ extension.exportSettings = function () {
 # IMPORT SETTINGS
 --------------------------------------------------------------*/
 
-extension.importSettings = function () {
-	if (location.href.indexOf('action=import-settings') !== -1) {
+extension.importSettings = function (file_only, callback) {
+	if (file_only) {
+		var input = document.createElement('input');
+
+		input.type = 'file';
+
+		input.addEventListener('change', function () {
+			var file_reader = new FileReader();
+
+			file_reader.onload = function () {
+				var data = JSON.parse(this.result);
+
+				for (var key in data) {
+					satus.storage.set(key, data[key]);
+				}
+
+				setTimeout(function () {
+					chrome.runtime.sendMessage({
+						action: 'import-settings'
+					});
+
+					callback();
+				}, 256);
+			};
+
+			file_reader.readAsText(this.files[0]);
+		});
+
+		input.click();
+	} else if (location.href.indexOf('action=import-settings') !== -1) {
 		satus.render({
 			component: 'modal',
 			variant: 'confirm',
@@ -91,35 +119,11 @@ extension.importSettings = function () {
 					text: 'ok',
 					on: {
 						click: function () {
-							var input = document.createElement('input');
-
-							input.type = 'file';
-
-							input.addEventListener('change', function () {
-								var file_reader = new FileReader();
-
-								file_reader.onload = function () {
-									var data = JSON.parse(this.result);
-
-									for (var key in data) {
-										satus.storage.set(key, data[key]);
-									}
-
-									setTimeout(function () {
-										chrome.runtime.sendMessage({
-											action: 'import-settings'
-										});
-
-										setTimeout(function () {
-											close();
-										}, 128);
-									}, 256);
-								};
-
-								file_reader.readAsText(this.files[0]);
+							extension.importSettings(true, function () {
+								setTimeout(function () {
+									close();
+								}, 1000);
 							});
-
-							input.click();
 						}
 					}
 				}
@@ -197,8 +201,9 @@ extension.updateLists = function () {
 									component: 'input',
 									type: 'text',
 									attr: {
-										'autofocus': true,
-										'value': modal.skeleton.parentSkeleton.list.name
+										type: 'text',
+										autofocus: true,
+										value: modal.skeleton.parentSkeleton.list.name
 									},
 									on: {
 										render: function () {
@@ -508,10 +513,10 @@ extension.updateTasks = function (tasks) {
 								},
 								input: {
 									component: 'input',
-									type: 'text',
 									attr: {
-										'autofocus': true,
-										'value': modal.skeleton.parentSkeleton.task.name
+										type: 'text',
+										autofocus: true,
+										value: modal.skeleton.parentSkeleton.task.name
 									},
 									on: {
 										render: function () {
@@ -656,6 +661,8 @@ extension.crypt = function (mode, data, callback, component) {
 					this.focus();
 				},
 				keydown: async function (event) {
+					this.classList.remove('satus-input--error');
+
 					if (event.key === 'Enter') {
 						this.parentNode.parentNode.skeleton.actions.ok.rendered.click();
 					}
@@ -687,18 +694,22 @@ extension.crypt = function (mode, data, callback, component) {
 							if (result) {
 								callback(mode, result);
 
+								if (modal.rendered.baseProvider.skeleton.variant === 'temporary') {
+									modal.rendered.baseProvider.remove();
+								}
+
 								modal.rendered.close();
 							} else {
-								input.classList.add('error');
+								input.classList.add('satus-input--error');
 							}
 						} else {
-							input.classList.add('error');
+							input.classList.add('satus-input--error');
 						}
 					}
 				}
 			}
 		}
-	}, document.querySelector('.satus-base'));
+	}, extension.skeleton.rendered);
 };
 
 extension.encr = async function (callback) {
