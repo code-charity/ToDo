@@ -1,95 +1,95 @@
 {
     "areYouSureYouWantToExportTheData": {
-        "message": "Are you sure you want to export the data?"
+        "message": "Er du sikker på, at du vil eksportere dataene?"
     },
     "areYouSureYouWantToImportTheData": {
-        "message": "Are you sure you want to import the data?"
+        "message": "Er du sikker på, at du vil importere dataene?"
     },
     "black": {
-        "message": "Black"
+        "message": "Sort"
     },
     "cancel": {
-        "message": "Cancel"
+        "message": "Anullere"
     },
     "changeColor": {
-        "message": "Change color"
+        "message": "Skift farve"
     },
     "changeIcon": {
-        "message": "Change icon"
+        "message": "Skift ikon"
     },
     "color": {
-        "message": "Color"
+        "message": "Farve"
     },
     "create": {
-        "message": "Create"
+        "message": "Skab"
     },
     "dark": {
-        "message": "Dark"
+        "message": "Mørk"
     },
     "dataExportedSuccessfully": {
-        "message": "Data exported successfully"
+        "message": "Data blev eksporteret"
     },
     "dataImportedSuccessfully": {
-        "message": "Data imported successfully"
+        "message": "Data blev importeret"
     },
     "decryption": {
-        "message": "Decryption"
+        "message": "Dekryptering"
     },
     "description": {
-        "message": "With the To-Do extension you get a simple popup to capture your ideas, goals and daily tasks."
+        "message": "Med den simple To-do udvidelse, får du et simpelt popup til at gemme dine ideer, mål, og daglige opgaver."
     },
     "encryption": {
-        "message": "Encryption"
+        "message": "Enkryptering"
     },
     "export": {
-        "message": "Export"
+        "message": "Eksport"
     },
     "icons": {
-        "message": "Icons"
+        "message": "Ikoner"
     },
     "import": {
         "message": "Import"
     },
     "language": {
-        "message": "Language"
+        "message": "Sprog"
     },
     "light": {
-        "message": "Light"
+        "message": "Lyst"
     },
     "lists": {
-        "message": "Lists"
+        "message": "Liste"
     },
     "myTasks": {
-        "message": "My tasks"
+        "message": "Mine opgaver"
     },
     "newList": {
-        "message": "New list"
+        "message": "Ny liste"
     },
     "newTask": {
-        "message": "New task"
+        "message": "Ny opgave"
     },
     "noLists": {
-        "message": "No lists"
+        "message": "Ingen liste"
     },
     "noTasks": {
-        "message": "No tasks"
+        "message": "Ingen opgaver"
     },
     "ok": {
         "message": "OK"
     },
     "password": {
-        "message": "Password"
+        "message": "Kodeord"
     },
     "remove": {
-        "message": "Remove"
+        "message": "Fjern"
     },
     "rename": {
-        "message": "Rename"
+        "message": "Omdøb"
     },
     "selectFile": {
-        "message": "Select file"
+        "message": "Vælg fil"
     },
     "theme": {
-        "message": "Theme"
+        "message": "Tema"
     }
 }
