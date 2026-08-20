@@ -30,7 +30,7 @@
 - [ ] [Persian](https://github.com/victor-savinov/todo/tree/master/_locales/fa/messages.json) `/fa/`
 - [ ] [Finnish](https://github.com/victor-savinov/todo/tree/master/_locales/fi/messages.json) `/fi/`
 - [ ] [Filipino](https://github.com/victor-savinov/todo/tree/master/_locales/fil/messages.json) `/fil/`
-- [ ] [French](https://github.com/victor-savinov/todo/tree/master/_locales/fr/messages.json) `/fr/`
+- [x] [French](https://github.com/victor-savinov/todo/tree/master/_locales/fr/messages.json) `/fr/`
 - [ ] [Gujarati](https://github.com/victor-savinov/todo/tree/master/_locales/gu/messages.json) `/gu/`
 - [ ] [Hebrew](https://github.com/victor-savinov/todo/tree/master/_locales/he/messages.json) `/he/`
 - [ ] [Hindi](https://github.com/victor-savinov/todo/tree/master/_locales/hi/messages.json) `/hi/`
