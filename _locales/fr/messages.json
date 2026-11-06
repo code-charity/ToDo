@@ -1,95 +1,95 @@
 {
     "areYouSureYouWantToExportTheData": {
-        "message": "Are you sure you want to export the data?"
+        "message": "Êtes-vous sûr de vouloir exporter les données ?"
     },
     "areYouSureYouWantToImportTheData": {
-        "message": "Are you sure you want to import the data?"
+        "message": "Êtes-vous sûr de vouloir importer les données ?"
     },
     "black": {
-        "message": "Black"
+        "message": "Noir"
     },
     "cancel": {
-        "message": "Cancel"
+        "message": "Annuler"
     },
     "changeColor": {
-        "message": "Change color"
+        "message": "Modifier la couleur"
     },
     "changeIcon": {
-        "message": "Change icon"
+        "message": "Changer l'icône"
     },
     "color": {
-        "message": "Color"
+        "message": "Couleur"
     },
     "create": {
-        "message": "Create"
+        "message": "Créer"
     },
     "dark": {
-        "message": "Dark"
+        "message": "Sombre"
     },
     "dataExportedSuccessfully": {
-        "message": "Data exported successfully"
+        "message": "Les données ont été correctement exportées"
     },
     "dataImportedSuccessfully": {
-        "message": "Data imported successfully"
+        "message": "Les données ont été correctement importées"
     },
     "decryption": {
-        "message": "Decryption"
+        "message": "Déchiffrement"
     },
     "description": {
-        "message": "With the To-Do extension you get a simple popup to capture your ideas, goals and daily tasks."
+        "message": "L'extension To-Do vous permet d'accéder à une simple fenêtre contextuelle pour noter vos idées, vos objectifs et vos tâches quotidiennes."
     },
     "encryption": {
-        "message": "Encryption"
+        "message": "Chiffrement"
     },
     "export": {
         "message": "Export"
     },
     "icons": {
-        "message": "Icons"
+        "message": "Icônes"
     },
     "import": {
         "message": "Import"
     },
     "language": {
-        "message": "Language"
+        "message": "Langage"
     },
     "light": {
-        "message": "Light"
+        "message": "Clair"
     },
     "lists": {
-        "message": "Lists"
+        "message": "Listes"
     },
     "myTasks": {
-        "message": "My tasks"
+        "message": "Mes tâches"
     },
     "newList": {
-        "message": "New list"
+        "message": "Nouvelle liste"
     },
     "newTask": {
-        "message": "New task"
+        "message": "Nouvelle tâche"
     },
     "noLists": {
-        "message": "No lists"
+        "message": "Aucune liste"
     },
     "noTasks": {
-        "message": "No tasks"
+        "message": "Aucune tâche"
     },
     "ok": {
         "message": "OK"
     },
     "password": {
-        "message": "Password"
+        "message": "Mot de passe"
     },
     "remove": {
-        "message": "Remove"
+        "message": "Supprimer"
     },
     "rename": {
-        "message": "Rename"
+        "message": "Renommer"
     },
     "selectFile": {
-        "message": "Select file"
+        "message": "Choisir un fichier"
     },
     "theme": {
-        "message": "Theme"
+        "message": "Thème"
     }
 }
