@@ -578,7 +578,7 @@ extension.updateTasks = function (tasks) {
 							var path = extension.skeleton.main.layers.rendered.path,
 								layer = path[path.length - 1],
 								modal = this.parentNode.parentNode,
-								parent = modal.skeleton.parent;
+								parent = modal.skeleton.parentSkeleton;
 
 							satus.remove(parent.task, parent.tasks);
 
