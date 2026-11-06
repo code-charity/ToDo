@@ -1849,6 +1849,7 @@
 
 .satus-checkbox__checkmark {
 	position: relative;
+	pointer-events: none;
 
 	display: flex;
 
