@@ -34,10 +34,27 @@ satus.storage.import(function (items) {
 
 				satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);
 			} else if (satus.storage.get('encrypted') === true && satus.isString(satus.storage.get('lists'))) {
-				extension.crypt(false, satus.storage.get('lists'), function (mode, data) {
-					extension.lists = data;
+				chrome.storage.session.get('password', async function (items) {
+					var lists = false;
 
-					satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);
+					if (items.password) {
+						try {
+							lists = JSON.parse(await satus.decrypt(satus.storage.get('lists'), items.password));
+						} catch (error) {}
+					}
+
+					if (lists) {
+						extension.password = items.password;
+						extension.lists = lists;
+
+						satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);
+					} else {
+						extension.crypt(false, satus.storage.get('lists'), function (mode, data) {
+							extension.lists = data;
+
+							satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);
+						});
+					}
 				});
 			} else {
 				satus.render(extension.skeleton, extension.skeleton.rendered, undefined, true);

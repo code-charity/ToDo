@@ -686,9 +686,11 @@ extension.crypt = function (mode, data, callback, component) {
 							if (mode) {
 								result = await satus.encrypt(data, input.value);
 								extension.password = input.value;
+								chrome.storage.session.set({ password: input.value });
 							} else {
 								result = JSON.parse(await satus.decrypt(data, input.value));
 								extension.password = input.value;
+								chrome.storage.session.set({ password: input.value });
 							}
 
 							if (result) {
