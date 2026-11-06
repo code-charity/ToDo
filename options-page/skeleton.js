@@ -153,6 +153,12 @@ extension.skeleton.header = {
 						}, {
 							value: 'de',
 							text: 'Deutsch'
+						}, {
+							value: 'da',
+							text: 'Dansk'
+						}, {
+							value: 'pt_BR',
+							text: 'Português (Brasil)'
 						}]
 					},
 					encrypted: {
